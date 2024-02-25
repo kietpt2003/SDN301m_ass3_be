@@ -4,35 +4,34 @@ const Schema = mongoose.Schema;
 const orchidSchema = new Schema({
     name: {
         type: String,
-        required: true,
-        unique: true
+        require: true
     },
     image: {
         type: String,
-        required: true,
-    },
-    price: {
-        type: Number,
-        required: true,
-        min: 0,
-    },
-    original: {
-        type: String,
-        require: true,
+        require: true
     },
     isNatural: {
         type: Boolean,
-        require: true,
+        default: false
     },
-    color: {
+    origin: {
         type: String,
-        require: true,
-    }
+        require: true
+    },
+    comments: {
+        type: [{
+            type: Schema.Types.ObjectId,
+            ref: 'Comments', // Reference to the Comments schema
+        }],
+    },
+    category: {
+        type: Schema.Types.ObjectId,
+        ref: "Categories",
+        require: true
+    },
+}, { timestamps: true, });
 
-}, {
-    timestamps: true
-});
 
-let Orchids = mongoose.model('orchids', orchidSchema);
+let Orchids = mongoose.model('Orchids', orchidSchema);
 
 module.exports = Orchids;

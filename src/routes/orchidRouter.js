@@ -1,13 +1,14 @@
 const router = require("express").Router();
-import { OrchidsPage, deleteOrchid, postOrchid, updateOrchid } from '../controller/orchidsController';
+import { orchidsController } from '../controller/orchidsController';
 
 const iniOrchidRoute = (app) => {
-    router.get('/', OrchidsPage);
-    router.post('/', postOrchid);
-    router.put('/', updateOrchid);
-    router.delete('/:id', deleteOrchid);
+    router.get('/:id', orchidsController.orchidById);
+    router.get('/', orchidsController.orchidsByPage);
+    router.post('/', orchidsController.postOrchid);
+    router.put('/', orchidsController.updateOrchid);
+    router.delete('/:id', orchidsController.deleteOrchid);
 
-    return app.use('/Orchids', router);
+    return app.use('/api/Orchids', router);
 }
 
 export {

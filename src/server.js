@@ -6,11 +6,17 @@ import { configViewEngine } from './config/viewEngine';
 import { initCategoryRouter } from './routes/categoryRouter';
 import { iniOrchidRoute } from './routes/orchidRouter';
 import { configBodyParse } from './config/configBodyParser';
+import { configCORS } from './config/configCORS';
 
 // import mongoose from 'mongoose';
+// import Comments from './models/Comments';
 // import Categories from './models/Categories';
+// import Users from './models/Users';
 // import Orchids from './models/Orchids';
 const app = express();
+
+//Config CORS
+configCORS(app);
 
 //Config Body-Parser
 configBodyParse(app);
@@ -35,56 +41,79 @@ initCategoryRouter(app);
 iniOrchidRoute(app);
 
 //Categories Sample Data Generator
-// const exampleData = [
-//     {
-//         name: 'Cattleya',
-//         description: 'The Queen of orchids',
-//     },
-//     {
-//         name: 'Dendrobium',
-//         description: 'Known for diversity and durability',
-//     },
-//     {
-//         name: 'Phalaenopsis',
-//         description: 'Often called the Moth Orchid',
-//     },
-//     {
-//         name: 'Oncidium',
-//         description: 'Recognized by its dancing lady-shaped flowers',
-//     },
-//     {
-//         name: 'Vanda',
-//         description: 'Known for large, vibrant flowers',
-//     },
-//     {
-//         name: 'Cymbidium',
-//         description: 'Popular for its use in corsages',
-//     },
-//     {
-//         name: 'Miltonia',
-//         description: 'Nicknamed the Pansy Orchid',
-//     },
-//     {
-//         name: 'Masdevallia',
-//         description: 'Distinctive for its showy and colorful blooms',
-//     },
-//     {
-//         name: 'Epidendrum',
-//         description: 'Characterized by its reed-like stems',
-//     },
-//     {
-//         name: 'Laelia',
-//         description: 'Often fragrant and elegant in appearance',
-//     },
+// const categoriesData = [
+//     { categoryName: "Flowers" },
+//     { categoryName: "Fruits" },
+//     { categoryName: "Electronics" },
+//     { categoryName: "Clothing" },
+//     { categoryName: "Home Decor" },
+//     { categoryName: "Books" },
+//     { categoryName: "Sports Equipment" },
+//     { categoryName: "Tech Gadgets" },
+//     { categoryName: "Outdoor Gear" },
+//     { categoryName: "Beauty Products" }
 // ];
-// const url = 'mongodb://localhost:27017/shoppingFlower';
+// const url = 'mongodb://localhost:27017/shoppingFlowerAss3';
 // const connect = mongoose.connect(url, { family: 4 });
 
 // connect.then(() => {
 
 //     console.log('Connected correctly to server');
 
-//     Categories.insertMany(exampleData)
+//     Categories.insertMany(categoriesData)
+//         .then((cate) => {
+//             console.log(cate);
+//         })
+//         .catch((err) => {
+//             console.log(err);
+//         });
+
+// });
+
+//Users Sample Data Generator
+// const usersData = [
+//     { username: "john_doe", password: "securepassword1", isAdmin: false },
+//     { username: "alice_smith", password: "strongpassword123", isAdmin: true },
+//     { username: "bob_jones", password: "myp@ssw0rd", isAdmin: false }
+// ];
+// const url = 'mongodb://localhost:27017/shoppingFlowerAss3';
+// const connect = mongoose.connect(url, { family: 4 });
+
+// connect.then(() => {
+
+//     console.log('Connected correctly to server');
+
+//     Users.insertMany(usersData)
+//         .then((cate) => {
+//             console.log(cate);
+//         })
+//         .catch((err) => {
+//             console.log(err);
+//         });
+
+// });
+
+// Comments Sample Data Generator
+// const commentsData = [
+//     { rating: 4, comment: "Beautiful flowers!", author: "65db861706131b72d6ad24d9" },
+//     { rating: 5, comment: "Great tech gadgets!", author: "65db861706131b72d6ad24da" },
+//     { rating: 3, comment: "Nice clothing collection.", author: "65db861706131b72d6ad24d9" },
+//     { rating: 4, comment: "Tasty fruits!", author: "65db861706131b72d6ad24d9" },
+//     { rating: 5, comment: "Amazing home decor items.", author: "65db861706131b72d6ad24da" },
+//     { rating: 2, comment: "Not a fan of this book.", author: "65db861706131b72d6ad24db" },
+//     { rating: 4, comment: "Perfect sports equipment.", author: "65db861706131b72d6ad24da" },
+//     { rating: 5, comment: "Innovative tech gadgets.", author: "65db861706131b72d6ad24db" },
+//     { rating: 3, comment: "Durable outdoor gear.", author: "65db861706131b72d6ad24db" },
+//     { rating: 4, comment: "Quality beauty products.", author: "65db861706131b72d6ad24d9" }
+// ];
+// const url = 'mongodb://localhost:27017/shoppingFlowerAss3';
+// const connect = mongoose.connect(url, { family: 4 });
+
+// connect.then(() => {
+
+//     console.log('Connected correctly to server');
+
+//     Comments.insertMany(commentsData)
 //         .then((cate) => {
 //             console.log(cate);
 //         })
@@ -95,96 +124,216 @@ iniOrchidRoute(app);
 // });
 
 //Orchids Sample Data Generator
-// const exampleData = [
+// const orchidsData = [
 //     {
-//         "name": "Banana",
-//         "image": "https://www.forbesindia.com/media/images/2022/Sep/img_193773_banana.jpg",
-//         "price": 99,
-//         "original": "Thailand",
-//         "isNatural": true,
-//         "color": "yellow"
+//         name: "Phalaenopsis amabilis",
+//         image: "https://www.forbesindia.com/media/images/2022/Sep/img_193773_banana.jpg",
+//         isNatural: true,
+//         origin: "Southeast Asia",
+//         comments: ["65db878791381084ddf3df15", "65db878791381084ddf3df16"],
+//         category: "65db86052729918f28fe5882"
 //     },
 //     {
-//         "name": "Mini Banana",
-//         "image": "https://cdn-prod.medicalnewstoday.com/content/images/articles/271/271157/bananas-chopped-up-in-a-bowl.jpg",
-//         "price": 80,
-//         "original": "Thailand",
-//         "isNatural": false,
-//         "color": "yellow"
+//         name: "Cattleya labiata",
+//         image: "https://cdn-prod.medicalnewstoday.com/content/images/articles/271/271157/bananas-chopped-up-in-a-bowl.jpg",
+//         isNatural: true,
+//         origin: "Brazil",
+//         comments: ["65db878791381084ddf3df17", "65db878791381084ddf3df18"],
+//         category: "65db86052729918f28fe5882"
 //     },
 //     {
-//         "name": "Blue Orchid",
-//         "image": "https://www.epicgardening.com/wp-content/uploads/2023/09/Dyed-Blue-Orchid-Flowers.jpg",
-//         "price": 120,
-//         "original": "Brazil",
-//         "isNatural": true,
-//         "color": "blue"
+//         name: "Dendrobium nobile",
+//         image: "https://www.epicgardening.com/wp-content/uploads/2023/09/Dyed-Blue-Orchid-Flowers.jpg",
+//         isNatural: true,
+//         origin: "Himalayas",
+//         comments: ["65db878791381084ddf3df19", "65db878791381084ddf3df1a"],
+//         category: "65db86052729918f28fe5882"
 //     },
 //     {
-//         "name": "Sunflower Orchid",
-//         "image": "https://i.pinimg.com/originals/c6/08/8c/c6088c0b8c0efe7dcc0e4ce2bbe30548.jpg",
-//         "price": 80,
-//         "original": "Vietnam",
-//         "isNatural": false,
-//         "color": "orange"
+//         name: "Vanda coerulea",
+//         image: "https://img.freepik.com/premium-photo/elegant-white-orchid-table-floral-stock-photo_954894-66959.jpg",
+//         isNatural: true,
+//         origin: "India",
+//         comments: ["65db878791381084ddf3df1b", "65db878791381084ddf3df1c"],
+//         category: "65db86052729918f28fe5882"
 //     },
 //     {
-//         "name": "Elegant White Orchid",
-//         "image": "https://img.freepik.com/premium-photo/elegant-white-orchid-table-floral-stock-photo_954894-66959.jpg",
-//         "price": 150,
-//         "original": "France",
-//         "isNatural": true,
-//         "color": "white"
+//         name: "Cymbidium insigne",
+//         image: "https://m.media-amazon.com/images/I/81LxOCjQLkL._AC_UF894,1000_QL80_.jpg",
+//         isNatural: true,
+//         origin: "Himalayas",
+//         comments: ["65db878791381084ddf3df1d", "65db878791381084ddf3df1e"],
+//         category: "65db86052729918f28fe5882"
 //     },
 //     {
-//         "name": "Purple Passion Orchid",
-//         "image": "https://m.media-amazon.com/images/I/81LxOCjQLkL._AC_UF894,1000_QL80_.jpg",
-//         "price": 110,
-//         "original": "Indonesia",
-//         "isNatural": false,
-//         "color": "purple"
+//         name: "Oncidium flexuosum",
+//         image: "https://cdn11.bigcommerce.com/s-ookf1bkiza/images/stencil/1280x1280/products/21801/24747/tigerb__91036.1536179119.jpg?c=2",
+//         isNatural: true,
+//         origin: "Central America",
+//         comments: [],
+//         category: "65db86052729918f28fe5883"
 //     },
 //     {
-//         "name": "Golden Crown Orchid",
-//         "image": "https://cdn11.bigcommerce.com/s-ookf1bkiza/images/stencil/1280x1280/products/21801/24747/tigerb__91036.1536179119.jpg?c=2",
-//         "price": 200,
-//         "original": "Australia",
-//         "isNatural": true,
-//         "color": "gold"
+//         name: "Miltoniopsis vexillaria",
+//         image: "https://3.bp.blogspot.com/-Z4yGuycPjKk/W7g3tzIi5-I/AAAAAAAACwI/jT6C0HvCrVk7putz5By9h21PpIi2SL7yQCLcBGAs/s1600/PB198669.JPG",
+//         isNatural: true,
+//         origin: "South America",
+//         comments: [],
+//         category: "65db86052729918f28fe5883"
 //     },
 //     {
-//         "name": "Fire Red Orchid",
-//         "image": "https://3.bp.blogspot.com/-Z4yGuycPjKk/W7g3tzIi5-I/AAAAAAAACwI/jT6C0HvCrVk7putz5By9h21PpIi2SL7yQCLcBGAs/s1600/PB198669.JPG",
-//         "price": 130,
-//         "original": "Mexico",
-//         "isNatural": false,
-//         "color": "red"
+//         name: "Dendrobium kingianum",
+//         image: "https://www.orchidroots.com/static/utils/images/hybrid/hyb_100955340_000006340.jpg",
+//         isNatural: true,
+//         origin: "Australia",
+//         comments: [],
+//         category: "65db86052729918f28fe5883"
 //     },
 //     {
-//         "name": "Green Envy Orchid",
-//         "image": "https://www.orchidroots.com/static/utils/images/hybrid/hyb_100955340_000006340.jpg",
-//         "price": 180,
-//         "original": "Japan",
-//         "isNatural": true,
-//         "color": "green"
+//         name: "Brassavola nodosa",
+//         image: "https://beautifulgardener.files.wordpress.com/2013/01/4-23-2007-035.jpg?w=640",
+//         isNatural: true,
+//         origin: "Central America",
+//         comments: [],
+//         category: "65db86052729918f28fe5883"
 //     },
 //     {
-//         "name": "Silver Splendor Orchid",
-//         "image": "https://beautifulgardener.files.wordpress.com/2013/01/4-23-2007-035.jpg?w=640",
-//         "price": 160,
-//         "original": "Italy",
-//         "isNatural": false,
-//         "color": "silver"
-//     }
-// ]
-// const url = 'mongodb://localhost:27017/shoppingFlower';
+//         name: "Laelia purpurata",
+//         image: "https://beautifulgardener.files.wordpress.com/2013/01/4-23-2007-035.jpg?w=640",
+//         isNatural: true,
+//         origin: "Brazil",
+//         comments: [],
+//         category: "65db86052729918f28fe5883"
+//     },
+//     {
+//         name: "Phragmipedium besseae",
+//         image: "https://www.epicgardening.com/wp-content/uploads/2023/09/Dyed-Blue-Orchid-Flowers.jpg",
+//         isNatural: true,
+//         origin: "Peru",
+//         comments: [],
+//         category: "65db86052729918f28fe5884"
+//     },
+//     {
+//         name: "Catasetum pileatum",
+//         image: "https://img.freepik.com/premium-photo/elegant-white-orchid-table-floral-stock-photo_954894-66959.jpg",
+//         isNatural: true,
+//         origin: "South America",
+//         comments: [],
+//         category: "65db86052729918f28fe5884"
+//     },
+//     {
+//         name: "Masdevallia infracta",
+//         image: "https://m.media-amazon.com/images/I/81LxOCjQLkL._AC_UF894,1000_QL80_.jpg",
+//         isNatural: true,
+//         origin: "Peru",
+//         comments: [],
+//         category: "65db86052729918f28fe5884"
+//     },
+//     {
+//         name: "Zygopetalum mackayi",
+//         image: "https://cdn11.bigcommerce.com/s-ookf1bkiza/images/stencil/1280x1280/products/21801/24747/tigerb__91036.1536179119.jpg?c=2",
+//         isNatural: true,
+//         origin: "Brazil",
+//         comments: [],
+//         category: "65db86052729918f28fe5884"
+//     },
+//     {
+//         name: "Encyclia cochleata",
+//         image: "https://3.bp.blogspot.com/-Z4yGuycPjKk/W7g3tzIi5-I/AAAAAAAACwI/jT6C0HvCrVk7putz5By9h21PpIi2SL7yQCLcBGAs/s1600/PB198669.JPG",
+//         isNatural: true,
+//         origin: "Caribbean",
+//         comments: [],
+//         category: "65db86052729918f28fe5884"
+//     },
+//     {
+//         name: "Oncidium flexuosum",
+//         image: "https://www.orchidroots.com/static/utils/images/hybrid/hyb_100955340_000006340.jpg",
+//         isNatural: true,
+//         origin: "Central America",
+//         comments: [],
+//         category: "65db86052729918f28fe5883"
+//     },
+//     {
+//         name: "Miltonia spectabilis",
+//         image: "https://beautifulgardener.files.wordpress.com/2013/01/4-23-2007-035.jpg?w=640",
+//         isNatural: true,
+//         origin: "Brazil",
+//         comments: [],
+//         category: "65db86052729918f28fe5883"
+//     },
+//     {
+//         name: "Cypripedium acaule",
+//         image: "https://beautifulgardener.files.wordpress.com/2013/01/4-23-2007-035.jpg?w=640",
+//         isNatural: true,
+//         origin: "North America",
+//         comments: [],
+//         category: "65db86052729918f28fe5883"
+//     },
+//     {
+//         name: "Dendrophylax lindenii",
+//         image: "https://www.epicgardening.com/wp-content/uploads/2023/09/Dyed-Blue-Orchid-Flowers.jpg",
+//         isNatural: true,
+//         origin: "Florida",
+//         comments: [],
+//         category: "65db86052729918f28fe5883"
+//     },
+//     {
+//         name: "Masdevallia infracta",
+//         image: "https://img.freepik.com/premium-photo/elegant-white-orchid-table-floral-stock-photo_954894-66959.jpg",
+//         isNatural: true,
+//         origin: "South America",
+//         comments: [],
+//         category: "65db86052729918f28fe5883"
+//     },
+//     {
+//         name: "Laelia anceps",
+//         image: "https://m.media-amazon.com/images/I/81LxOCjQLkL._AC_UF894,1000_QL80_.jpg",
+//         isNatural: true,
+//         origin: "Mexico",
+//         comments: [],
+//         category: "65db86052729918f28fe5883"
+//     },
+//     {
+//         name: "Paphiopedilum hirsutissimum",
+//         image: "https://cdn11.bigcommerce.com/s-ookf1bkiza/images/stencil/1280x1280/products/21801/24747/tigerb__91036.1536179119.jpg?c=2",
+//         isNatural: true,
+//         origin: "Southeast Asia",
+//         comments: [],
+//         category: "65db86052729918f28fe5883"
+//     },
+//     {
+//         name: "Epidendrum radicans",
+//         image: "https://3.bp.blogspot.com/-Z4yGuycPjKk/W7g3tzIi5-I/AAAAAAAACwI/jT6C0HvCrVk7putz5By9h21PpIi2SL7yQCLcBGAs/s1600/PB198669.JPG",
+//         isNatural: true,
+//         origin: "Central America",
+//         comments: [],
+//         category: "65db86052729918f28fe5883"
+//     },
+//     {
+//         name: "Odontoglossum crispum",
+//         image: "https://www.orchidroots.com/static/utils/images/hybrid/hyb_100955340_000006340.jpg",
+//         isNatural: true,
+//         origin: "South America",
+//         comments: [],
+//         category: "65db86052729918f28fe5883"
+//     },
+//     {
+//         name: "Catasetum macrocarpum",
+//         image: "https://beautifulgardener.files.wordpress.com/2013/01/4-23-2007-035.jpg?w=640",
+//         isNatural: true,
+//         origin: "Central and South America",
+//         comments: [],
+//         category: "65db86052729918f28fe5883"
+//     },
+// ];
+// const url = 'mongodb://localhost:27017/shoppingFlowerAss3';
 // const connect = mongoose.connect(url, { family: 4 });
 
 // connect.then(() => {
 
 //     console.log('Connected correctly to server');
 
-//     Orchids.insertMany(exampleData)
+//     Orchids.insertMany(orchidsData)
 //         .then((orc) => {
 //             console.log(orc);
 //         })

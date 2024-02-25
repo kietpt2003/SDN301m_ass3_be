@@ -2,21 +2,11 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const categorySchema = new Schema({
-    name: {
+    categoryName: {
         type: String,
-        required: true,
-        unique: true
     },
-    description: {
-        type: String,
-        required: true,
-        unique: false
-    },
+}, { timestamps: true, });
 
-}, {
-    timestamps: true
-});
-
-let Categories = mongoose.model('categories', categorySchema);
+let Categories = mongoose.model('Categories', categorySchema);
 
 module.exports = Categories;
