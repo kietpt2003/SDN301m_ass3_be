@@ -1,0 +1,548 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.scss" />
+    <link rel="stylesheet" href="/css/product.scss" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <title>Document</title>
+    <script>
+        // When the user clicks on <div>, open the popup
+        function myFunction(index) {
+            console.log('test: ', index);
+            let popup = document.getElementById(`myPopup${index}`);
+            popup.classList.toggle("show");
+
+            document.getElementById(`delete-form${index}`).addEventListener("submit", function (event) {
+                // Prevent the form from submitting
+                event.preventDefault();
+                let orchidId = event.target.elements.orchidId.value;
+                console.log('check here');
+                fetch(`/Orchids/${orchidId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json(); // Parse the JSON in the response
+                    })
+                    .then(data => {
+                        if (!data.deleteSuccess) {
+                            let errorMessage = ''
+                            if (data.error) {
+                                errorMessage += data.error;
+                            }
+                            alert('Error list:\n' + errorMessage)
+                        } else {
+                            alert('Delete success');
+                            location.href = 'http://localhost:8080/Orchids';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            });
+        }
+
+        function splitString(inputString) {
+            // Sử dụng hàm split để cắt chuỗi thành mảng dựa trên ký tự "&&"
+            const resultArray = inputString.split("&&");
+
+            // Nếu mảng có ít nhất 3 phần tử
+            if (resultArray.length >= 7) {
+                const id = resultArray[0];
+                const name = resultArray[1];
+                const image = resultArray[2];
+                const price = resultArray[3];
+                const original = resultArray[4];
+                const isNatural = resultArray[5];
+                const color = resultArray[6];
+                return { id, name, image, price, original, isNatural, color };
+            } else {
+                // Nếu không đủ phần tử, trả về null hoặc giá trị mặc định tùy vào yêu cầu của bạn
+                return null;
+            }
+        }
+        function getSelectedValue() {
+            // Get the select element
+            const selectElement = document.getElementById("mySelect");
+
+            // Get the selected option
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            // Get the value of the selected option
+            const selectedValue = selectedOption.value;
+
+            const orchid = splitString(selectedValue);
+
+            document.getElementById('id').value = orchid.id;
+            document.getElementById('orchidName').value = orchid.name;
+            document.getElementById('currentName').value = orchid.name;
+            document.getElementById('image').value = orchid.image;
+            document.getElementById('price').value = orchid.price;
+            document.getElementById('original').value = orchid.original;
+            document.getElementById('isNatural').value = orchid.isNatural;
+            document.getElementById('color').value = orchid.color;
+            console.log('here');
+        }
+
+        const handleUpdateForm = () => {
+            document.getElementById("update-form").addEventListener("submit", function (event) {
+                // Prevent the form from submitting
+                event.preventDefault();
+                let orchid = {};
+                orchid.id = event.target.elements.id.value;
+                orchid.name = event.target.elements.orchidName.value;
+                orchid.currentName = event.target.elements.currentName.value;
+                orchid.image = event.target.elements.image.value;
+                orchid.price = event.target.elements.price.value;
+                orchid.original = event.target.elements.original.value;
+                orchid.isNatural = event.target.elements.isNatural.value;
+                orchid.color = event.target.elements.color.value;
+                fetch('/Orchids', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(orchid)
+                })
+                    .then(response => {
+                        return response.json(); // Parse the JSON in the response
+                    })
+                    .then(data => {
+                        // Access the data returned from the server
+                        console.log('arrOrchids:', data.arrOrchids);
+                        console.log('isUpdate:', data.isUpdate);
+                        console.log('check err: ', data.errorUpdate);
+                        if (!data.isUpdate) {
+                            let errorMessage = ''
+                            if (data.errorUpdate.isEmptyName) {
+                                errorMessage += data.errorUpdate.isEmptyName + '\n';
+                            }
+                            if (data.errorUpdate.isEmptyImg) {
+                                errorMessage += data.errorUpdate.isEmptyImg + '\n';
+                            }
+                            if (data.errorUpdate.isEmptyPrice) {
+                                errorMessage += data.errorUpdate.isEmptyPrice + '\n';
+                            }
+                            if (data.errorUpdate.invalidPrice) {
+                                errorMessage += data.errorUpdate.invalidPrice + '\n';
+                            }
+                            if (data.errorUpdate.isEmptyOriginal) {
+                                errorMessage += data.errorUpdate.isEmptyOriginal + '\n';
+                            }
+                            if (data.errorUpdate.isEmptyNatural) {
+                                errorMessage += data.errorUpdate.isEmptyNatural + '\n';
+                            }
+                            if (data.errorUpdate.isEmptyColor) {
+                                errorMessage += data.errorUpdate.isEmptyColor + '\n';
+                            }
+                            if (data.errorUpdate.isDup) {
+                                errorMessage += data.errorUpdate.isDup + '\n';
+                            }
+                            if (data.errorUpdate.invalidId) {
+                                errorMessage += data.errorUpdate.invalidId + '\n';
+                            }
+                            alert('Error list:\n' + errorMessage)
+                        } else {
+                            alert('Update Success!')
+                            location.href = 'http://localhost:8080/Orchids';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }, { once: true });
+        }
+
+        const handleCreateForm = () => {
+            document.getElementById("create-form").addEventListener("submit", function (event) {
+                // Prevent the form from submitting
+                event.preventDefault();
+                let orchid = {};
+                orchid.name = event.target.elements.orchidName.value;
+                orchid.image = event.target.elements.image.value;
+                orchid.price = event.target.elements.price.value;
+                orchid.original = event.target.elements.original.value;
+                orchid.isNatural = event.target.elements.isNatural.value;
+                orchid.color = event.target.elements.color.value;
+                fetch('/Orchids', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(orchid)
+                })
+                    .then(response => {
+                        return response.json(); // Parse the JSON in the response
+                    })
+                    .then(data => {
+                        // Access the data returned from the server
+                        console.log('isSuccess:', data.isSuccess);
+                        console.log('check err: ', data.error);
+                        if (!data.isSuccess) {
+                            let errorMessage = ''
+                            if (data.error.isEmptyName) {
+                                errorMessage += data.error.isEmptyName + '\n';
+                            }
+                            if (data.error.isEmptyImg) {
+                                errorMessage += data.error.isEmptyImg + '\n';
+                            }
+                            if (data.error.isEmptyPrice) {
+                                errorMessage += data.error.isEmptyPrice + '\n';
+                            }
+                            if (data.error.invalidPrice) {
+                                errorMessage += data.error.invalidPrice + '\n';
+                            }
+                            if (data.error.isEmptyOriginal) {
+                                errorMessage += data.error.isEmptyOriginal + '\n';
+                            }
+                            if (data.error.isEmptyNatural) {
+                                errorMessage += data.error.isEmptyNatural + '\n';
+                            }
+                            if (data.error.isEmptyColor) {
+                                errorMessage += data.error.isEmptyColor + '\n';
+                            }
+                            if (data.error.isDup) {
+                                errorMessage += data.error.isDup + '\n';
+                            }
+                            alert('Error list:\n' + errorMessage)
+                        } else {
+                            alert('Create Success!')
+                            location.href = 'http://localhost:8080/Orchids';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }, { once: true });
+        }
+
+    </script>
+</head>
+
+<body>
+    <div class="topnav">
+        <a class="active" href="/">Orchids</a>
+        <a href="/categories">Categories</a>
+    </div>
+
+    <div class="create-form">
+        <h2>Create Orchid Form</h2>
+        <form id="create-form" action="/Orchids" method="post">
+            <div class="input-group">
+                <label for="orchidName">Orchid name:</label>
+                <input type="text" name="orchidName" />
+            </div>
+            <!-- Empty name -->
+            <% if (typeof error !=='undefined' ) { %>
+                <% if (typeof error.isEmptyName !=='undefined' ) { %>
+                    <p class="error">
+                        <%= error.isEmptyName %>
+                    </p>
+                    <% } %>
+                        <% } %>
+                            <div class="input-group">
+                                <label for="image">Image URL:</label>
+                                <input type="text" name="image">
+                            </div>
+                            <!-- Empty Image URL -->
+                            <% if (typeof error !=='undefined' ) { %>
+                                <% if (typeof error.isEmptyImg !=='undefined' ) { %>
+                                    <p class="error">
+                                        <%= error.isEmptyImg %>
+                                    </p>
+                                    <% } %>
+                                        <% } %>
+                                            <div class="input-group">
+                                                <label for="price">Price:</label>
+                                                <input type="text" name="price">
+                                            </div>
+                                            <!-- Empty Price -->
+                                            <% if (typeof error !=='undefined' ) { %>
+                                                <% if (typeof error.isEmptyPrice !=='undefined' ) { %>
+                                                    <p class="error">
+                                                        <%= error.isEmptyPrice %>
+                                                    </p>
+                                                    <% } %>
+                                                        <% } %>
+                                                            <div class="input-group">
+                                                                <label for="original">Original:</label>
+                                                                <input type="text" name="original">
+                                                            </div>
+                                                            <!-- Empty Original -->
+                                                            <% if (typeof error !=='undefined' ) { %>
+                                                                <% if (typeof error.isEmptyOriginal !=='undefined' ) {
+                                                                    %>
+                                                                    <p class="error">
+                                                                        <%= error.isEmptyOriginal %>
+                                                                    </p>
+                                                                    <% } %>
+                                                                        <% } %>
+                                                                            <div class="input-group">
+                                                                                <label for="isNatural">Is
+                                                                                    natural:</label>
+                                                                                <input type="text" name="isNatural">
+                                                                            </div>
+                                                                            <!-- Error natural -->
+                                                                            <% if (typeof error !=='undefined' ) { %>
+                                                                                <% if (typeof error.isEmptyNatural
+                                                                                    !=='undefined' ) { %>
+                                                                                    <p class="error">
+                                                                                        <%= error.isEmptyNatural %>
+                                                                                    </p>
+                                                                                    <% } %>
+                                                                                        <% } %>
+                                                                                            <div class="input-group">
+                                                                                                <label
+                                                                                                    for="color">Color:</label>
+                                                                                                <input type="text"
+                                                                                                    name="color">
+                                                                                            </div>
+                                                                                            <!-- Empty Color -->
+                                                                                            <% if (typeof error
+                                                                                                !=='undefined' ) { %>
+                                                                                                <% if (typeof
+                                                                                                    error.isEmptyColor
+                                                                                                    !=='undefined' ) {
+                                                                                                    %>
+                                                                                                    <p class="error">
+                                                                                                        <%= error.isEmptyColor
+                                                                                                            %>
+                                                                                                    </p>
+                                                                                                    <% } %>
+                                                                                                        <% } %>
+                                                                                                            <div
+                                                                                                                class="input-group">
+                                                                                                                <button
+                                                                                                                    onclick="handleCreateForm()">Create</button>
+                                                                                                            </div>
+                                                                                                            <!-- Duplicate -->
+                                                                                                            <% if
+                                                                                                                (typeof
+                                                                                                                error
+                                                                                                                !=='undefined'
+                                                                                                                ) { %>
+                                                                                                                <% if
+                                                                                                                    (typeof
+                                                                                                                    error.isDup
+                                                                                                                    !=='undefined'
+                                                                                                                    ) {
+                                                                                                                    %>
+                                                                                                                    <p
+                                                                                                                        class="error">
+                                                                                                                        <%= error.isDup
+                                                                                                                            %>
+                                                                                                                    </p>
+                                                                                                                    <% }
+                                                                                                                        %>
+                                                                                                                        <% }
+                                                                                                                            %>
+        </form>
+    </div>
+
+    <div class="create-form">
+        <h2>Update Orchid Form</h2>
+        <div class="custom-select">
+            <label for="orchid">Choose name:</label>
+            <select onchange="getSelectedValue()" id="mySelect">
+                <option value="" selected disabled hidden>Choose here</option>
+                <% if (typeof arrOrchids !=='undefined' ) { %>
+                    <% arrOrchids.forEach(function(orchid, index) { %>
+                        <option
+                            value="<%=orchid._id%>&&<%=orchid.name%>&&<%=orchid.image%>&&<%=orchid.price%>&&<%=orchid.original%>&&<%=orchid.isNatural%>&&<%=orchid.color%>">
+                            <%= orchid.name %>
+                        </option>
+                        <% }) %>
+                            <% } %>
+            </select>
+        </div>
+        <% if (typeof arrOrchids !=='undefined' ) { %>
+            <form id="update-form" action="/Orchids">
+                <input id="id" type="text" name="id" hidden />
+                <input id="currentName" type="text" name="currentName" hidden />
+                <div class="input-group">
+                    <label for="orchidName">Orchid name:</label>
+                    <input id="orchidName" type="text" name="orchidName" />
+                </div>
+                <!-- Empty name -->
+                <% if (typeof errorUpdate !=='undefined' ) { %>
+                    <% if (typeof errorUpdate.isEmptyName !=='undefined' ) { %>
+                        <p class="error">
+                            <%= errorUpdate.isEmptyName %>
+                        </p>
+                        <% } %>
+                            <% } %>
+                                <div class="input-group">
+                                    <label for="image">Image URL:</label>
+                                    <input id="image" type="text" name="image">
+                                </div>
+                                <!-- Empty Image URL -->
+                                <% if (typeof errorUpdate !=='undefined' ) { %>
+                                    <% if (typeof errorUpdate.isEmptyImg !=='undefined' ) { %>
+                                        <p class="error">
+                                            <%= errorUpdate.isEmptyImg %>
+                                        </p>
+                                        <% } %>
+                                            <% } %>
+                                                <div class="input-group">
+                                                    <label for="price">Price:</label>
+                                                    <input id="price" type="text" name="price">
+                                                </div>
+                                                <!-- Empty Price -->
+                                                <% if (typeof errorUpdate !=='undefined' ) { %>
+                                                    <% if (typeof errorUpdate.isEmptyPrice !=='undefined' ) { %>
+                                                        <p class="error">
+                                                            <%= errorUpdate.isEmptyPrice %>
+                                                        </p>
+                                                        <% } %>
+                                                            <% } %>
+                                                                <div class="input-group">
+                                                                    <label for="original">Original:</label>
+                                                                    <input id="original" type="text" name="original">
+                                                                </div>
+                                                                <!-- Empty Original -->
+                                                                <% if (typeof errorUpdate !=='undefined' ) { %>
+                                                                    <% if (typeof errorUpdate.isEmptyOriginal
+                                                                        !=='undefined' ) { %>
+                                                                        <p class="error">
+                                                                            <%= errorUpdate.isEmptyOriginal %>
+                                                                        </p>
+                                                                        <% } %>
+                                                                            <% } %>
+                                                                                <div class="input-group">
+                                                                                    <label for="isNatural">Is
+                                                                                        natural:</label>
+                                                                                    <input id="isNatural" type="text"
+                                                                                        name="isNatural">
+                                                                                </div>
+                                                                                <!-- Error natural -->
+                                                                                <% if (typeof errorUpdate !=='undefined'
+                                                                                    ) { %>
+                                                                                    <% if (typeof
+                                                                                        errorUpdate.isEmptyNatural
+                                                                                        !=='undefined' ) { %>
+                                                                                        <p class="error">
+                                                                                            <%= errorUpdate.isEmptyNatural
+                                                                                                %>
+                                                                                        </p>
+                                                                                        <% } %>
+                                                                                            <% } %>
+                                                                                                <div
+                                                                                                    class="input-group">
+                                                                                                    <label
+                                                                                                        for="color">Color:</label>
+                                                                                                    <input id="color"
+                                                                                                        type="text"
+                                                                                                        name="color">
+                                                                                                </div>
+                                                                                                <!-- Empty Color -->
+                                                                                                <% if (typeof
+                                                                                                    errorUpdate
+                                                                                                    !=='undefined' ) {
+                                                                                                    %>
+                                                                                                    <% if (typeof
+                                                                                                        errorUpdate.isEmptyColor
+                                                                                                        !=='undefined' )
+                                                                                                        { %>
+                                                                                                        <p
+                                                                                                            class="error">
+                                                                                                            <%= errorUpdate.isEmptyColor
+                                                                                                                %>
+                                                                                                        </p>
+                                                                                                        <% } %>
+                                                                                                            <% } %>
+                                                                                                                <div
+                                                                                                                    class="input-group">
+                                                                                                                    <button
+                                                                                                                        onclick="handleUpdateForm()"
+                                                                                                                        type="submit">Update</button>
+                                                                                                                </div>
+                                                                                                                <!-- Duplicate -->
+                                                                                                                <% if
+                                                                                                                    (typeof
+                                                                                                                    errorUpdate
+                                                                                                                    !=='undefined'
+                                                                                                                    ) {
+                                                                                                                    %>
+                                                                                                                    <% if
+                                                                                                                        (typeof
+                                                                                                                        errorUpdate.isDup
+                                                                                                                        !=='undefined'
+                                                                                                                        )
+                                                                                                                        {
+                                                                                                                        %>
+                                                                                                                        <p
+                                                                                                                            class="error">
+                                                                                                                            <%= errorUpdate.isDup
+                                                                                                                                %>
+                                                                                                                        </p>
+                                                                                                                        <% }
+                                                                                                                            %>
+                                                                                                                            <% }
+                                                                                                                                %>
+            </form>
+            <% } %>
+    </div>
+
+    <% if (typeof arrOrchids !=='undefined' ) { %>
+        <div class="container">
+            <% arrOrchids.forEach(function(orchid, index) { %>
+                <form id="delete-form<%= index %>" class="product" action="/Orchids/<%= orchid._id %>">
+                    <input id="orchidId" type="text" name="orchidId" value="<%= orchid._id %>" hidden />
+                    <div class="product-left">
+                        <div class="images" style="background-image: url(<%= orchid.image %>);">
+                        </div>
+                    </div>
+                    <div class="product-right">
+                        <div class="product-top">
+                            <p class="product-collection">Orchid Collection</p>
+                            <h1 class="product-name">
+                                <%= orchid.name %>
+                            </h1>
+
+                            <h1 class="product-price">$<%= orchid.price %>
+                            </h1>
+                            <p>State: <%= orchid.original %>
+                            </p>
+                            <p>Natural: <%= orchid.isNatural %>
+                            </p>
+                            <div class="product-color">
+                                <p class="pick-color">Available Colors:
+                                </p>
+                                <div class="colors">
+                                    <span style="color: <%= orchid.color %>;" class="material-symbols-outlined">
+                                        radio_button_checked
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-bottom">
+                            <button onclick="myFunction(<%= index %>)" type="button">Delete Now</button>
+                            <button class="popuptext" id="myPopup<%= index %>">
+                                Yes
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <% }) %>
+        </div>
+        <% } else { %>
+            <p>Nothing to show</p>
+            <% } %>
+
+                <!-- Success -->
+                <% if (typeof isSuccess !=='undefined' ) { %>
+                    <div class="alert">
+                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        Create success!!
+                    </div>
+                    <% } %>
+</body>
+
+</html>

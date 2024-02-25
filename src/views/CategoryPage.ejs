@@ -1,0 +1,332 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.scss" />
+    <link rel="stylesheet" href="/css/category.scss" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <title>Assignment 2</title>
+    <script>
+        // When the user clicks on <div>, open the popup
+        function myFunction(index) {
+            console.log('test: ', index);
+            let popup = document.getElementById(`myPopup${index}`);
+            popup.classList.toggle("show");
+
+            document.getElementById(`delete-form${index}`).addEventListener("submit", function (event) {
+                // Prevent the form from submitting
+                event.preventDefault();
+                let cateId = event.target.elements.cateId.value;
+                fetch(`/categories/${cateId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                    .then(response => {
+                        return response.json(); // Parse the JSON in the response
+                    })
+                    .then(data => {
+                        if (!data.deleteSuccess) {
+                            let errorMessage = ''
+                            if (data.error) {
+                                errorMessage += data.error;
+                            }
+                            alert('Error list:\n' + errorMessage)
+                        } else {
+                            alert('Delete success');
+                            location.href = 'http://localhost:8080/categories';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            });
+        }
+
+        function splitString(inputString) {
+            // Sử dụng hàm split để cắt chuỗi thành mảng dựa trên ký tự "&&"
+            const resultArray = inputString.split("&&");
+
+            // Nếu mảng có ít nhất 3 phần tử
+            if (resultArray.length >= 3) {
+                const id = resultArray[0];
+                const name = resultArray[1];
+                const description = resultArray[2];
+                return { id, name, description };
+            } else {
+                // Nếu không đủ phần tử, trả về null hoặc giá trị mặc định tùy vào yêu cầu của bạn
+                return null;
+            }
+        }
+        function getSelectedValue() {
+            // Get the select element
+            const selectElement = document.getElementById("mySelect");
+
+            // Get the selected option
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            // Get the value of the selected option
+            const selectedValue = selectedOption.value;
+
+            const category = splitString(selectedValue);
+
+            document.getElementById('id').value = category.id;
+            document.getElementById('cateName').value = category.name;
+            document.getElementById('currentName').value = category.name;
+            document.getElementById('description').value = category.description;
+            console.log('here');
+        }
+
+        const handleUpdateForm = () => {
+            document.getElementById("update-form").addEventListener("submit", function (event) {
+                // Prevent the form from submitting
+                event.preventDefault();
+                let category = {};
+                category.id = event.target.elements.id.value;
+                category.name = event.target.elements.cateName.value;
+                category.currentName = event.target.elements.currentName.value;
+                category.description = event.target.elements.description.value;
+                fetch('/categories', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(category)
+                })
+                    .then(response => {
+                        return response.json(); // Parse the JSON in the response
+                    })
+                    .then(data => {
+                        // Access the data returned from the server
+                        console.log('arrCategories:', data.arrCategories);
+                        console.log('isUpdate:', data.isUpdate);
+                        console.log('check err: ', data.errorUpdate);
+                        if (!data.isUpdate) {
+                            let errorMessage = ''
+                            if (data.errorUpdate.isEmptyName) {
+                                errorMessage += data.errorUpdate.isEmptyName + '\n';
+                            }
+                            if (data.errorUpdate.isEmptyDes) {
+                                errorMessage += data.errorUpdate.isEmptyDes + '\n';
+                            }
+                            if (data.errorUpdate.isDup) {
+                                errorMessage += data.errorUpdate.isDup + '\n';
+                            }
+                            if (data.errorUpdate.invalidId) {
+                                errorMessage += data.errorUpdate.invalidId + '\n';
+                            }
+                            alert('Error list:\n' + errorMessage)
+                        } else {
+                            alert('Update Success!')
+                            location.href = 'http://localhost:8080/categories';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }, { once: true });
+        }
+
+        const handleCreateForm = () => {
+            document.getElementById("create-form").addEventListener("submit", function (event) {
+                // Prevent the form from submitting
+                event.preventDefault();
+                let category = {};
+                category.cateName = event.target.elements.cateName.value;
+                category.description = event.target.elements.description.value;
+                fetch('/categories', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(category)
+                })
+                    .then(response => {
+                        return response.json(); // Parse the JSON in the response
+                    })
+                    .then(data => {
+                        // Access the data returned from the server
+                        // console.log('arrCategories:', data.arrCategories);
+                        console.log('isSuccess:', data.isSuccess);
+                        console.log('check err: ', data.error);
+                        if (!data.isSuccess) {
+                            let errorMessage = ''
+                            if (data.error.isEmptyName) {
+                                errorMessage += data.error.isEmptyName + '\n';
+                            }
+                            if (data.error.isEmptyDes) {
+                                errorMessage += data.error.isEmptyDes + '\n';
+                            }
+                            if (data.error.isDup) {
+                                errorMessage += data.error.isDup + '\n';
+                            }
+                            alert('Error list:\n' + errorMessage)
+                        } else {
+                            alert('Create Success!')
+                            location.href = 'http://localhost:8080/categories';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }, { once: true });
+        }
+
+    </script>
+</head>
+
+<body>
+    <div class="topnav">
+        <a href="/">Orchids</a>
+        <a class="active" href="/categories">Categories</a>
+    </div>
+
+    <div class="create-form">
+        <h2>Create Category Form</h2>
+        <form id="create-form" action="/categories" method="post">
+            <div class="input-group">
+                <label for="cateName">Category name:</label>
+                <input type="text" name="cateName" />
+            </div>
+            <!-- Empty name -->
+            <% if (typeof error !=='undefined' ) { %>
+                <% if (typeof error.isEmptyName !=='undefined' ) { %>
+                    <p class="error">
+                        <%= error.isEmptyName %>
+                    </p>
+                    <% } %>
+                        <% } %>
+                            <div class="input-group">
+                                <label for="description">Description:</label>
+                                <input type="text" name="description">
+                            </div>
+                            <!-- Empty Description -->
+                            <% if (typeof error !=='undefined' ) { %>
+                                <% if (typeof error.isEmptyDes !=='undefined' ) { %>
+                                    <p class="error">
+                                        <%= error.isEmptyDes %>
+                                    </p>
+                                    <% } %>
+                                        <% } %>
+                                            <div class="input-group">
+                                                <button onclick="handleCreateForm()">Create</button>
+                                            </div>
+                                            <!-- Duplicate -->
+                                            <% if (typeof error !=='undefined' ) { %>
+                                                <% if (typeof error.isDup !=='undefined' ) { %>
+                                                    <p class="error">
+                                                        <%= error.isDup %>
+                                                    </p>
+                                                    <% } %>
+                                                        <% } %>
+        </form>
+    </div>
+
+    <div class="create-form">
+        <h2>Update Category Form</h2>
+        <div class="custom-select">
+            <label for="category">Choose category:</label>
+            <select onchange="getSelectedValue()" id="mySelect">
+                <option value="" selected disabled hidden>Choose here</option>
+                <% if (typeof arrCategories !=='undefined' ) { %>
+                    <% arrCategories.forEach(function(category, index) { %>
+                        <option value="<%=category._id%>&&<%=category.name%>&&<%=category.description%>">
+                            <%= category.name %>
+                        </option>
+                        <% }) %>
+                            <% } %>
+            </select>
+        </div>
+        <% if (typeof arrCategories !=='undefined' ) { %>
+            <form id="update-form" action="/categories">
+                <input id="id" type="text" name="id" hidden />
+                <input id="currentName" type="text" name="currentName" hidden />
+                <div class="input-group">
+                    <label for="cateName">Category name:</label>
+                    <input id="cateName" type="text" name="cateName" />
+                </div>
+                <!-- Empty name -->
+                <% if (typeof errorUpdate !=='undefined' ) { %>
+                    <% if (typeof errorUpdate.isEmptyName !=='undefined' ) { %>
+                        <p class="error">
+                            <%= errorUpdate.isEmptyName %>
+                        </p>
+                        <% } %>
+                            <% } %>
+                                <div class="input-group">
+                                    <label for="description">Description:</label>
+                                    <input id="description" type="text" name="description">
+                                </div>
+                                <!-- Empty Description -->
+                                <% if (typeof errorUpdate !=='undefined' ) { %>
+                                    <% if (typeof errorUpdate.isEmptyDes !=='undefined' ) { %>
+                                        <p class="error">
+                                            <%= errorUpdate.isEmptyDes %>
+                                        </p>
+                                        <% } %>
+                                            <% } %>
+                                                <div class="input-group">
+                                                    <button onclick="handleUpdateForm()" type="submit">Update</button>
+                                                </div>
+                                                <!-- Duplicate -->
+                                                <% if (typeof errorUpdate !=='undefined' ) { %>
+                                                    <% if (typeof errorUpdate.isDup !=='undefined' ) { %>
+                                                        <p class="error">
+                                                            <%= errorUpdate.isDup %>
+                                                        </p>
+                                                        <% } %>
+                                                            <% } %>
+            </form>
+            <% } %>
+    </div>
+
+    <% if (typeof arrCategories !=='undefined' ) { %>
+        <div class="container">
+            <% arrCategories.forEach(function(category, index) { %>
+                <div class="category">
+                    <form id="delete-form<%= index %>" class="category-top" action="/categories/<%= category._id %>"
+                        method="post">
+                        <input id="cateId" type="text" name="cateId" value="<%= category._id %>" hidden />
+                        <div class="cate-header">
+                            <h4 class="category-collection">Category Collection
+                            </h4>
+                            <div class="popup">
+                                <span onclick="myFunction(<%= index %>)" for="myPopup<%= index %>"
+                                    class="material-symbols-outlined">
+                                    delete
+                                </span>
+                                <button class="popuptext" id="myPopup<%= index %>">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                        <h3 class="category-name">
+                            <%= category.name %>
+                        </h3>
+                        <div class="category-description">
+                            <h3>Description:
+                            </h3>
+                            <p>
+                                <%= category.description %>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+                <% }) %>
+        </div>
+        <% } else { %>
+            <p>Nothing to show</p>
+            <% } %>
+
+                <!-- Success -->
+                <% if (typeof isSuccess !=='undefined' ) { %>
+                    <div class="alert">
+                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        Create success!!
+                    </div>
+                    <% } %>
+</body>
+
+</html>

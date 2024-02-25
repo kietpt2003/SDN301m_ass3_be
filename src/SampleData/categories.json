@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Cattleya",
+    "description": "The Queen of orchids"
+  },
+  {
+    "name": "Dendrobium",
+    "description": "Known for diversity and durability"
+  },
+  {
+    "name": "Phalaenopsis",
+    "description": "Often called the Moth Orchid"
+  },
+  {
+    "name": "Oncidium",
+    "description": "Recognized by its dancing lady-shaped flowers"
+  },
+  {
+    "name": "Vanda",
+    "description": "Known for large, vibrant flowers"
+  },
+  {
+    "name": "Cymbidium",
+    "description": "Popular for its use in corsages"
+  },
+  {
+    "name": "Miltonia",
+    "description": "Nicknamed the Pansy Orchid"
+  },
+  {
+    "name": "Masdevallia",
+    "description": "Distinctive for its showy and colorful blooms"
+  },
+  {
+    "name": "Epidendrum",
+    "description": "Characterized by its reed-like stems"
+  },
+  {
+    "name": "Laelia",
+    "description": "Often fragrant and elegant in appearance"
+  }
+]
