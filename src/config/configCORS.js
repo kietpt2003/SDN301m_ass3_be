@@ -1,5 +1,7 @@
-import cors from "cors";
+const cors = require("cors");
 
-export const configCORS = (app) => {
+const configCORS = (app) => {
     app.use(cors());
 }
+
+module.exports = configCORS;

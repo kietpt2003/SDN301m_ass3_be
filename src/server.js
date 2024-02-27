@@ -1,18 +1,23 @@
-import dotenv from 'dotenv';
-import { configENV } from './config/configENV';
-import express from 'express';
-import { configLog } from './config/configLogServer';
-import { configViewEngine } from './config/viewEngine';
-import { initCategoryRouter } from './routes/categoryRouter';
-import { iniOrchidRoute } from './routes/orchidRouter';
-import { configBodyParse } from './config/configBodyParser';
-import { configCORS } from './config/configCORS';
+const dotenv = require('dotenv');
+const configENV = require('./config/configENV');
+const express = require("express");
+const configLog = require('./config/configLogServer');
+const configViewEngine = require('./config/viewEngine');
+const configBodyParse = require('./config/configBodyParser');
+const configCORS = require('./config/configCORS');
 
-// import mongoose from 'mongoose';
-// import Comments from './models/Comments';
-// import Categories from './models/Categories';
-// import Users from './models/Users';
-// import Orchids from './models/Orchids';
+// const mongoose = require('mongoose');
+// const Comments = require('./models/Comments');
+// const Categories = require('./models/Categories');
+// const Users = require('./models/Users');
+// const Orchids = require('./models/Orchids');
+const passport = require('passport')
+const session = require('express-session');
+const flash = require('connect-flash');
+const usersRouter = require("./routes/users");
+const iniOrchidRoute = require("./routes/orchidRouter");
+const initCategoryRouter = require('./routes/categoryRouter');
+
 const app = express();
 
 //Config CORS
@@ -23,6 +28,24 @@ configBodyParse(app);
 
 //Config .env
 configENV(dotenv);
+
+require('./config/passport')(passport);
+app.use(
+    session({
+        secret: 'secret',
+        resave: true,
+        saveUninitialized: true
+    })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+app.use(function (req, res, next) {
+    res.locals.success_msg = req.flash('success_msg');
+    res.locals.error_msg = req.flash('error_msg');
+    res.locals.error = req.flash('error');
+    next();
+});
 
 //Config check log server
 configLog(app);
@@ -39,6 +62,8 @@ initCategoryRouter(app);
 
 //Init orchid routes
 iniOrchidRoute(app);
+
+app.use("/users", usersRouter);
 
 //Categories Sample Data Generator
 // const categoriesData = [
@@ -95,16 +120,16 @@ iniOrchidRoute(app);
 
 // Comments Sample Data Generator
 // const commentsData = [
-//     { rating: 4, comment: "Beautiful flowers!", author: "65db861706131b72d6ad24d9" },
-//     { rating: 5, comment: "Great tech gadgets!", author: "65db861706131b72d6ad24da" },
-//     { rating: 3, comment: "Nice clothing collection.", author: "65db861706131b72d6ad24d9" },
-//     { rating: 4, comment: "Tasty fruits!", author: "65db861706131b72d6ad24d9" },
-//     { rating: 5, comment: "Amazing home decor items.", author: "65db861706131b72d6ad24da" },
-//     { rating: 2, comment: "Not a fan of this book.", author: "65db861706131b72d6ad24db" },
-//     { rating: 4, comment: "Perfect sports equipment.", author: "65db861706131b72d6ad24da" },
-//     { rating: 5, comment: "Innovative tech gadgets.", author: "65db861706131b72d6ad24db" },
-//     { rating: 3, comment: "Durable outdoor gear.", author: "65db861706131b72d6ad24db" },
-//     { rating: 4, comment: "Quality beauty products.", author: "65db861706131b72d6ad24d9" }
+//     { rating: 4, comment: "Beautiful flowers!", author: "65dd2821a87dc6b35c9f6c5b" },
+//     { rating: 5, comment: "Great tech gadgets!", author: "65dd2821a87dc6b35c9f6c5c" },
+//     { rating: 3, comment: "Nice clothing collection.", author: "65dd2821a87dc6b35c9f6c5b" },
+//     { rating: 4, comment: "Tasty fruits!", author: "65dd2821a87dc6b35c9f6c5b" },
+//     { rating: 5, comment: "Amazing home decor items.", author: "65dd2821a87dc6b35c9f6c5c" },
+//     { rating: 2, comment: "Not a fan of this book.", author: "65dd2821a87dc6b35c9f6c5d" },
+//     { rating: 4, comment: "Perfect sports equipment.", author: "65dd2821a87dc6b35c9f6c5c" },
+//     { rating: 5, comment: "Innovative tech gadgets.", author: "65dd2821a87dc6b35c9f6c5d" },
+//     { rating: 3, comment: "Durable outdoor gear.", author: "65dd2821a87dc6b35c9f6c5d" },
+//     { rating: 4, comment: "Quality beauty products.", author: "65dd2821a87dc6b35c9f6c5b" }
 // ];
 // const url = 'mongodb://localhost:27017/shoppingFlowerAss3';
 // const connect = mongoose.connect(url, { family: 4 });
@@ -130,40 +155,164 @@ iniOrchidRoute(app);
 //         image: "https://www.forbesindia.com/media/images/2022/Sep/img_193773_banana.jpg",
 //         isNatural: true,
 //         origin: "Southeast Asia",
-//         comments: ["65db878791381084ddf3df15", "65db878791381084ddf3df16"],
-//         category: "65db86052729918f28fe5882"
+//         comments: [{
+//             "_id": "65dd287f40bdacd80b8ce207"
+//             ,
+//             "rating": 4,
+//             "comment": "Beautiful flowers!",
+//             "author": "65dd2821a87dc6b35c9f6c5b"
+//             ,
+//             "__v": 0,
+//             "createdAt": "2024-02-27T00:10:39.207Z"
+//             ,
+//             "updatedAt": "2024-02-27T00:10:39.207Z"
+
+//         }, {
+//             "_id": "65dd287f40bdacd80b8ce208"
+//             ,
+//             "rating": 5,
+//             "comment": "Great tech gadgets!",
+//             "author": "65dd2821a87dc6b35c9f6c5c"
+//             ,
+//             "__v": 0,
+//             "createdAt": "2024-02-27T00:10:39.207Z"
+//             ,
+//             "updatedAt": "2024-02-27T00:10:39.207Z"
+
+//         },],
+//         category: "65dd281bf886d1da5d546d40"
 //     },
 //     {
 //         name: "Cattleya labiata",
 //         image: "https://cdn-prod.medicalnewstoday.com/content/images/articles/271/271157/bananas-chopped-up-in-a-bowl.jpg",
 //         isNatural: true,
 //         origin: "Brazil",
-//         comments: ["65db878791381084ddf3df17", "65db878791381084ddf3df18"],
-//         category: "65db86052729918f28fe5882"
+//         comments: [{
+//             "_id": "65dd287f40bdacd80b8ce209"
+//             ,
+//             "rating": 3,
+//             "comment": "Nice clothing collection.",
+//             "author": "65dd2821a87dc6b35c9f6c5b"
+//             ,
+//             "__v": 0,
+//             "createdAt": "2024-02-27T00:10:39.207Z"
+//             ,
+//             "updatedAt": "2024-02-27T00:10:39.207Z"
+
+//         },
+//         {
+//             "_id": "65dd287f40bdacd80b8ce20a"
+//             ,
+//             "rating": 4,
+//             "comment": "Tasty fruits!",
+//             "author": "65dd2821a87dc6b35c9f6c5b"
+//             ,
+//             "__v": 0,
+//             "createdAt": "2024-02-27T00:10:39.207Z"
+//             ,
+//             "updatedAt": "2024-02-27T00:10:39.207Z"
+
+//         },],
+//         category: "65dd281bf886d1da5d546d40"
 //     },
 //     {
 //         name: "Dendrobium nobile",
 //         image: "https://www.epicgardening.com/wp-content/uploads/2023/09/Dyed-Blue-Orchid-Flowers.jpg",
 //         isNatural: true,
 //         origin: "Himalayas",
-//         comments: ["65db878791381084ddf3df19", "65db878791381084ddf3df1a"],
-//         category: "65db86052729918f28fe5882"
+//         comments: [{
+//             "_id": "65dd287f40bdacd80b8ce20b"
+//             ,
+//             "rating": 5,
+//             "comment": "Amazing home decor items.",
+//             "author": "65dd2821a87dc6b35c9f6c5c"
+//             ,
+//             "__v": 0,
+//             "createdAt": "2024-02-27T00:10:39.207Z"
+//             ,
+//             "updatedAt": "2024-02-27T00:10:39.207Z"
+
+//         },
+//         {
+//             "_id": "65dd287f40bdacd80b8ce20c"
+//             ,
+//             "rating": 2,
+//             "comment": "Not a fan of this book.",
+//             "author": "65dd2821a87dc6b35c9f6c5d"
+//             ,
+//             "__v": 0,
+//             "createdAt": "2024-02-27T00:10:39.207Z"
+//             ,
+//             "updatedAt": "2024-02-27T00:10:39.207Z"
+
+//         },],
+//         category: "65dd281bf886d1da5d546d40"
 //     },
 //     {
 //         name: "Vanda coerulea",
 //         image: "https://img.freepik.com/premium-photo/elegant-white-orchid-table-floral-stock-photo_954894-66959.jpg",
 //         isNatural: true,
 //         origin: "India",
-//         comments: ["65db878791381084ddf3df1b", "65db878791381084ddf3df1c"],
-//         category: "65db86052729918f28fe5882"
+//         comments: [{
+//             "_id": "65dd287f40bdacd80b8ce20d"
+//             ,
+//             "rating": 4,
+//             "comment": "Perfect sports equipment.",
+//             "author": "65dd2821a87dc6b35c9f6c5c"
+//             ,
+//             "__v": 0,
+//             "createdAt": "2024-02-27T00:10:39.207Z"
+//             ,
+//             "updatedAt": "2024-02-27T00:10:39.207Z"
+
+//         },
+//         {
+//             "_id": "65dd287f40bdacd80b8ce20e"
+//             ,
+//             "rating": 5,
+//             "comment": "Innovative tech gadgets.",
+//             "author": "65dd2821a87dc6b35c9f6c5d"
+//             ,
+//             "__v": 0,
+//             "createdAt": "2024-02-27T00:10:39.208Z"
+//             ,
+//             "updatedAt": "2024-02-27T00:10:39.208Z"
+
+//         },],
+//         category: "65dd281bf886d1da5d546d40"
 //     },
 //     {
 //         name: "Cymbidium insigne",
 //         image: "https://m.media-amazon.com/images/I/81LxOCjQLkL._AC_UF894,1000_QL80_.jpg",
 //         isNatural: true,
 //         origin: "Himalayas",
-//         comments: ["65db878791381084ddf3df1d", "65db878791381084ddf3df1e"],
-//         category: "65db86052729918f28fe5882"
+//         comments: [{
+//             "_id": "65dd287f40bdacd80b8ce20f"
+//             ,
+//             "rating": 3,
+//             "comment": "Durable outdoor gear.",
+//             "author": "65dd2821a87dc6b35c9f6c5d"
+//             ,
+//             "__v": 0,
+//             "createdAt": "2024-02-27T00:10:39.208Z"
+//             ,
+//             "updatedAt": "2024-02-27T00:10:39.208Z"
+
+//         },
+//         {
+//             "_id": "65dd287f40bdacd80b8ce210"
+//             ,
+//             "rating": 4,
+//             "comment": "Quality beauty products.",
+//             "author": "65dd2821a87dc6b35c9f6c5b"
+//             ,
+//             "__v": 0,
+//             "createdAt": "2024-02-27T00:10:39.208Z"
+//             ,
+//             "updatedAt": "2024-02-27T00:10:39.208Z"
+
+//         },],
+//         category: "65dd281bf886d1da5d546d40"
 //     },
 //     {
 //         name: "Oncidium flexuosum",
@@ -171,7 +320,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "Central America",
 //         comments: [],
-//         category: "65db86052729918f28fe5883"
+//         category: "65dd281bf886d1da5d546d41"
 //     },
 //     {
 //         name: "Miltoniopsis vexillaria",
@@ -179,7 +328,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "South America",
 //         comments: [],
-//         category: "65db86052729918f28fe5883"
+//         category: "65dd281bf886d1da5d546d41"
 //     },
 //     {
 //         name: "Dendrobium kingianum",
@@ -187,7 +336,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "Australia",
 //         comments: [],
-//         category: "65db86052729918f28fe5883"
+//         category: "65dd281bf886d1da5d546d41"
 //     },
 //     {
 //         name: "Brassavola nodosa",
@@ -195,7 +344,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "Central America",
 //         comments: [],
-//         category: "65db86052729918f28fe5883"
+//         category: "65dd281bf886d1da5d546d41"
 //     },
 //     {
 //         name: "Laelia purpurata",
@@ -203,7 +352,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "Brazil",
 //         comments: [],
-//         category: "65db86052729918f28fe5883"
+//         category: "65dd281bf886d1da5d546d41"
 //     },
 //     {
 //         name: "Phragmipedium besseae",
@@ -211,7 +360,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "Peru",
 //         comments: [],
-//         category: "65db86052729918f28fe5884"
+//         category: "65dd281bf886d1da5d546d42"
 //     },
 //     {
 //         name: "Catasetum pileatum",
@@ -219,7 +368,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "South America",
 //         comments: [],
-//         category: "65db86052729918f28fe5884"
+//         category: "65dd281bf886d1da5d546d42"
 //     },
 //     {
 //         name: "Masdevallia infracta",
@@ -227,7 +376,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "Peru",
 //         comments: [],
-//         category: "65db86052729918f28fe5884"
+//         category: "65dd281bf886d1da5d546d42"
 //     },
 //     {
 //         name: "Zygopetalum mackayi",
@@ -235,7 +384,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "Brazil",
 //         comments: [],
-//         category: "65db86052729918f28fe5884"
+//         category: "65dd281bf886d1da5d546d42"
 //     },
 //     {
 //         name: "Encyclia cochleata",
@@ -243,7 +392,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "Caribbean",
 //         comments: [],
-//         category: "65db86052729918f28fe5884"
+//         category: "65dd281bf886d1da5d546d42"
 //     },
 //     {
 //         name: "Oncidium flexuosum",
@@ -251,7 +400,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "Central America",
 //         comments: [],
-//         category: "65db86052729918f28fe5883"
+//         category: "65dd281bf886d1da5d546d41"
 //     },
 //     {
 //         name: "Miltonia spectabilis",
@@ -259,7 +408,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "Brazil",
 //         comments: [],
-//         category: "65db86052729918f28fe5883"
+//         category: "65dd281bf886d1da5d546d41"
 //     },
 //     {
 //         name: "Cypripedium acaule",
@@ -267,7 +416,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "North America",
 //         comments: [],
-//         category: "65db86052729918f28fe5883"
+//         category: "65dd281bf886d1da5d546d41"
 //     },
 //     {
 //         name: "Dendrophylax lindenii",
@@ -275,7 +424,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "Florida",
 //         comments: [],
-//         category: "65db86052729918f28fe5883"
+//         category: "65dd281bf886d1da5d546d41"
 //     },
 //     {
 //         name: "Masdevallia infracta",
@@ -283,7 +432,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "South America",
 //         comments: [],
-//         category: "65db86052729918f28fe5883"
+//         category: "65dd281bf886d1da5d546d41"
 //     },
 //     {
 //         name: "Laelia anceps",
@@ -291,7 +440,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "Mexico",
 //         comments: [],
-//         category: "65db86052729918f28fe5883"
+//         category: "65dd281bf886d1da5d546d41"
 //     },
 //     {
 //         name: "Paphiopedilum hirsutissimum",
@@ -299,7 +448,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "Southeast Asia",
 //         comments: [],
-//         category: "65db86052729918f28fe5883"
+//         category: "65dd281bf886d1da5d546d41"
 //     },
 //     {
 //         name: "Epidendrum radicans",
@@ -307,7 +456,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "Central America",
 //         comments: [],
-//         category: "65db86052729918f28fe5883"
+//         category: "65dd281bf886d1da5d546d41"
 //     },
 //     {
 //         name: "Odontoglossum crispum",
@@ -315,7 +464,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "South America",
 //         comments: [],
-//         category: "65db86052729918f28fe5883"
+//         category: "65dd281bf886d1da5d546d41"
 //     },
 //     {
 //         name: "Catasetum macrocarpum",
@@ -323,7 +472,7 @@ iniOrchidRoute(app);
 //         isNatural: true,
 //         origin: "Central and South America",
 //         comments: [],
-//         category: "65db86052729918f28fe5883"
+//         category: "65dd281bf886d1da5d546d41"
 //     },
 // ];
 // const url = 'mongodb://localhost:27017/shoppingFlowerAss3';

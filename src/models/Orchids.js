@@ -1,4 +1,6 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
+// import { commentSchema } from './Comments';
+const { commentSchema } = require('./Comments');
 const Schema = mongoose.Schema;
 
 const orchidSchema = new Schema({
@@ -18,12 +20,7 @@ const orchidSchema = new Schema({
         type: String,
         require: true
     },
-    comments: {
-        type: [{
-            type: Schema.Types.ObjectId,
-            ref: 'Comments', // Reference to the Comments schema
-        }],
-    },
+    comments: [commentSchema],
     category: {
         type: Schema.Types.ObjectId,
         ref: "Categories",
@@ -32,6 +29,5 @@ const orchidSchema = new Schema({
 }, { timestamps: true, });
 
 
-let Orchids = mongoose.model('Orchids', orchidSchema);
-
+const Orchids = mongoose.model('Orchids', orchidSchema);
 module.exports = Orchids;

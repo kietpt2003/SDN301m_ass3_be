@@ -1,5 +1,5 @@
-import express from 'express';
-import { categoriesController } from '../controller/categoriesController'
+const express = require("express");
+const categoriesController = require('../controller/categoriesController');
 
 const router = express.Router();
 
@@ -12,6 +12,4 @@ const initCategoryRouter = (app) => {
     return app.use('/categories', router);
 }
 
-export {
-    initCategoryRouter
-}
+module.exports = initCategoryRouter;

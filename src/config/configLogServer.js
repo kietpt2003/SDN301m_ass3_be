@@ -1,5 +1,7 @@
-import morgan from "morgan"
+const morgan = require("morgan");
 
-export const configLog = (app) => {
+const configLog = (app) => {
     app.use(morgan('combined'));
 }
+
+module.exports = configLog;

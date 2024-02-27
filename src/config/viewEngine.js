@@ -1,6 +1,5 @@
 const path = require('path');
-// const express = require('express');
-import express from "express";
+const express = require('express');
 
 const configViewEngine = (app) => {
     //config template engine
@@ -11,6 +10,4 @@ const configViewEngine = (app) => {
     app.use(express.static(path.join('./src', 'public')));
 }
 
-export {
-    configViewEngine
-}
+module.exports = configViewEngine;

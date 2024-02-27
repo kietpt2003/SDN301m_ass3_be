@@ -1,6 +1,8 @@
-import express from "express";
+const express = require("express");
 
-export const configBodyParse = (app) => {
+const configBodyParse = (app) => {
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
 }
+
+module.exports = configBodyParse;

@@ -1,8 +1,7 @@
-import mongoose from 'mongoose';
-import Categories from '../models/Categories'
-
-export const categoryServices = {
-    getAllCategories: async () => {
+const mongoose = require('mongoose');
+const Categories = require('../models/Categories');
+class categoryServices {
+    async getAllCategories() {
         const url = process.env.URL_DB;
         const connect = mongoose.connect(url, { family: 4 });
         let arrCategories = [];
@@ -21,9 +20,9 @@ export const categoryServices = {
         });
 
         return arrCategories;
-    },
+    }
 
-    createCategory: async (newCategory) => {
+    async createCategory(newCategory) {
         return new Promise(async (resolve, reject) => {
             try {
                 let error = {}
@@ -82,9 +81,9 @@ export const categoryServices = {
                 resolve(error);
             }
         })
-    },
+    }
 
-    updateCate: async (cate) => {
+    async updateCate(cate) {
         return new Promise(async (resolve, reject) => {
             try {
                 let error = {}
@@ -164,9 +163,9 @@ export const categoryServices = {
                 resolve(error);
             }
         })
-    },
+    }
 
-    deleteCategoryById: async (id) => {
+    async deleteCategoryById(id) {
         return new Promise(async (resolve, reject) => {
             try {
                 const error = {}
@@ -274,3 +273,5 @@ let checkCategoryById = (id) => {
         }
     })
 }
+
+module.exports = new categoryServices();

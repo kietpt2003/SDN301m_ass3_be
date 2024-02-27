@@ -1,16 +1,20 @@
-import { orchidServices } from "../services/OrchidService"
+const orchidServices = require('../services/OrchidService')
 
-export const orchidsController = {
-    orchidsByPage: async (req, res) => {
+class orchidsController {
+    async orchidsByPage(req, res) {
 
         let data = await orchidServices.getOrchidsByPage(req.query.page);
         return res.status(data.status).json(data);
-    },
-    orchidById: async (req, res) => {
+    }
+    async orchidById(req, res) {
         let data = await orchidServices.getOrchidById(req.params.id);
         return res.status(data.status).json(data);
-    },
-    postOrchid: async (req, res) => {
+    }
+    async orchidByName(req, res) {
+        let data = await orchidServices.getOrchidByName(req.query.name, req.query.page);
+        return res.status(data.status).json(data);
+    }
+    async postOrchid(req, res) {
         const data = await orchidServices.createOrchid(req.body);
         if (data.error) {
             // return res.status(400).render('OrchidHomePage.ejs', { arrOrchids: data.arrOrchids, error: data.error });
@@ -27,8 +31,8 @@ export const orchidsController = {
             data: data.data,
             isSuccess: data.isSuccess,
         });
-    },
-    updateOrchid: async (req, res) => {
+    }
+    async updateOrchid(req, res) {
         const data = await orchidServices.updateOrc(req.body);
         if (data.errorUpdate) {
             return res.status(400).json({
@@ -42,8 +46,8 @@ export const orchidsController = {
             data: data.data,
             isUpdate: data.isUpdate
         });
-    },
-    deleteOrchid: async (req, res) => {
+    }
+    async deleteOrchid(req, res) {
         const data = await orchidServices.deleteOrchidById(req.params.id);
         if (data.error) {
             return res.status(400).json({
@@ -61,3 +65,5 @@ export const orchidsController = {
         // return res.render('OrchidPage.ejs', { arrCategories: data.arrCategories, deleteSuccess: data.deleteSuccess });
     }
 }
+
+module.exports = new orchidsController();

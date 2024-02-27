@@ -1,7 +1,8 @@
 const router = require("express").Router();
-import { orchidsController } from '../controller/orchidsController';
+const orchidsController = require('../controller/orchidsController');
 
 const iniOrchidRoute = (app) => {
+    router.get('/name', orchidsController.orchidByName);
     router.get('/:id', orchidsController.orchidById);
     router.get('/', orchidsController.orchidsByPage);
     router.post('/', orchidsController.postOrchid);
@@ -11,6 +12,4 @@ const iniOrchidRoute = (app) => {
     return app.use('/api/Orchids', router);
 }
 
-export {
-    iniOrchidRoute
-};
+module.exports = iniOrchidRoute

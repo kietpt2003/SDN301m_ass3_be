@@ -1,12 +1,12 @@
-import { categoryServices } from "../services/CategoryService";
+const categoryServices = require("../services/CategoryService");
 
-export const categoriesController = {
-    getCategories: async (req, res) => {
+class categoriesController {
+    async getCategories(req, res) {
         const arrCategories = await categoryServices.getAllCategories();
         return res.status(200).render('CategoryPage.ejs', { arrCategories });
-    },
+    }
 
-    postCategory: async (req, res) => {
+    async postCategory(req, res) {
         const data = await categoryServices.createCategory(req.body);
         if (data.error) {
             // return res.status(200).render('CategoryPage.ejs', { arrCategories: data.arrCategories, error: data.error });
@@ -23,9 +23,9 @@ export const categoriesController = {
             data: data.data,
             isSuccess: data.isSuccess
         });
-    },
+    }
 
-    updateCategory: async (req, res) => {
+    async updateCategory(req, res) {
         const data = await categoryServices.updateCate(req.body);
         if (data.errorUpdate) {
             return res.status(400).json({
@@ -39,9 +39,9 @@ export const categoriesController = {
             data: data.data,
             isUpdate: data.isUpdate
         });
-    },
+    }
 
-    deleteCategory: async (req, res) => {
+    async deleteCategory(req, res) {
         console.log('check data: ', req.params.id);
         const data = await categoryServices.deleteCategoryById(req.params.id);
         if (data.error) {
@@ -60,3 +60,5 @@ export const categoriesController = {
         // return res.render('CategoryPage.ejs', { arrCategories: data.arrCategories, deleteSuccess: data.deleteSuccess });
     }
 }
+
+module.exports = new categoriesController();

@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
-import Orchids from '../models/Orchids'
+const mongoose = require('mongoose');
+const Orchids = require('../models/Orchids');
 
-export const orchidServices = {
-    getOrchidsByPage: async (pageReq) => {
+class orchidServices {
+    async getOrchidsByPage(pageReq) {
         try {
             let data = {
                 orchidsArr: [],
@@ -50,10 +50,11 @@ export const orchidServices = {
             // Close the database connection
             mongoose.connection.close();
         }
-    },
+    }
 
-    getOrchidById: async (id) => {
+    async getOrchidById(id) {
         try {
+            let data = {}
             const idValid = await isIdValid(id, 'orchid');
             if (!idValid.isValid) {
                 return {
@@ -65,13 +66,20 @@ export const orchidServices = {
 
             const url = process.env.URL_DB;
             await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+            try {
 
-            const data = await Orchids.findById(id)
-                .populate({
-                    path: 'category',
-                    select: 'categoryName'
-                })
-                .populate('comments')
+                data = await Orchids.findById(id)
+                    .populate({
+                        path: 'category',
+                        select: 'categoryName'
+                    })
+                    .populate('comments.author')
+                // if (data && data?.comments.length) {
+                //     console.log('hehe');
+                // }
+            } catch (error) {
+                console.log('err: ', error);
+            }
 
             if (data) {
                 return {
@@ -95,9 +103,63 @@ export const orchidServices = {
             // Close the database connection
             mongoose.connection.close();
         }
-    },
+    }
 
-    createOrchid: async (newOrchid) => {
+    async getOrchidByName(name, pageReq) {
+        try {
+            let data = {
+                orchidsArr: [],
+                page: 1,
+                totalPages: 1,
+                itemsPerPage: 10,
+            };
+            data.itemsPerPage = 10;
+            // Parse query parameters
+            data.page = parseInt(pageReq) || 1;
+            const regex = new RegExp(name, "i");
+
+            // Calculate start and end indices for the current page
+            const startIndex = (data.page - 1) * data.itemsPerPage;
+
+            const url = process.env.URL_DB;
+            await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+            try {
+
+                data.orchidsArr = await Orchids.find({ name: { $regex: regex } })
+                    .populate('category')
+                    .skip(startIndex).limit(data.itemsPerPage);
+
+                data.totalPages = Math.ceil(data.orchidsArr.length / data.itemsPerPage);
+
+            } catch (error) {
+                console.log('err: ', error);
+            }
+
+            if (data) {
+                return {
+                    status: 200,
+                    data: data,
+                    message: "OK"
+                };
+            } else {
+                return {
+                    status: 200,
+                    data: {},
+                    message: "No data"
+                }
+            }
+        } catch (error) {
+            return {
+                status: 500,
+                messageError: error,
+            }
+        } finally {
+            // Close the database connection
+            mongoose.connection.close();
+        }
+    }
+
+    async createOrchid(newOrchid) {
         return new Promise(async (resolve, reject) => {
             try {
                 let error = {}
@@ -182,9 +244,9 @@ export const orchidServices = {
                 resolve(error);
             }
         })
-    },
+    }
 
-    updateOrc: async (orc) => {
+    async updateOrc(orc) {
         return new Promise(async (resolve, reject) => {
             try {
                 let error = {}
@@ -285,9 +347,9 @@ export const orchidServices = {
                 resolve(error);
             }
         })
-    },
+    }
 
-    deleteOrchidById: async (id) => {
+    async deleteOrchidById(id) {
         return new Promise(async (resolve, reject) => {
             try {
                 const error = {}
@@ -459,3 +521,5 @@ async function isIdValid(id, model) {
         mongoose.connection.close();
     }
 }
+
+module.exports = new orchidServices();
