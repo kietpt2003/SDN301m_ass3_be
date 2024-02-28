@@ -5,6 +5,7 @@ const configLog = require('./config/configLogServer');
 const configViewEngine = require('./config/viewEngine');
 const configBodyParse = require('./config/configBodyParser');
 const configCORS = require('./config/configCORS');
+const methodOverride = require('method-override')
 
 // const mongoose = require('mongoose');
 // const Comments = require('./models/Comments');
@@ -14,11 +15,15 @@ const configCORS = require('./config/configCORS');
 const passport = require('passport')
 const session = require('express-session');
 const flash = require('connect-flash');
-const usersRouter = require("./routes/users");
+const usersRouter = require("./routes/usersRouter");
 const iniOrchidRoute = require("./routes/orchidRouter");
 const initCategoryRouter = require('./routes/categoryRouter');
+const configPassport = require('./config/passport');
 
 const app = express();
+
+// override with POST having ?_method=DELETE
+app.use(methodOverride('_method'))
 
 //Config CORS
 configCORS(app);
@@ -29,7 +34,10 @@ configBodyParse(app);
 //Config .env
 configENV(dotenv);
 
-require('./config/passport')(passport);
+configPassport.passportLocal();
+
+configPassport.passportIsAdmin();
+
 app.use(
     session({
         secret: 'secret',
@@ -55,7 +63,7 @@ configViewEngine(app);
 
 
 app.get('/', function (req, res) {
-    res.redirect('/Orchids');
+    res.redirect('/users/login');
 });
 //Init category routes
 initCategoryRouter(app);

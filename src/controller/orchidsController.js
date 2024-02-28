@@ -1,6 +1,11 @@
+const passport = require('passport');
 const orchidServices = require('../services/OrchidService')
 
 class orchidsController {
+    async OrchidsPage(req, res) {
+        let arrOrchids = await orchidServices.getAllOrchids();
+        return res.render('OrchidHomePage.ejs', { arrOrchids });
+    }
     async orchidsByPage(req, res) {
 
         let data = await orchidServices.getOrchidsByPage(req.query.page);
@@ -8,11 +13,20 @@ class orchidsController {
     }
     async orchidById(req, res) {
         let data = await orchidServices.getOrchidById(req.params.id);
-        return res.status(data.status).json(data);
+        if (data.status !== 200) {
+            res.render('error')
+        }
+        return res.render('OrchidDetail.ejs', { orchid: data.data });
+        // return res.status(data.status).json(data);
     }
     async orchidByName(req, res) {
         let data = await orchidServices.getOrchidByName(req.query.name, req.query.page);
-        return res.status(data.status).json(data);
+        if (data.status !== 200) {
+            res.render('error')
+        }
+
+        return res.render('OrchidHomePage.ejs', { arrOrchids: data.data.orchidsArr });
+        // return res.status(data.status).json(data);
     }
     async postOrchid(req, res) {
         const data = await orchidServices.createOrchid(req.body);

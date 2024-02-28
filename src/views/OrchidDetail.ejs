@@ -1,0 +1,67 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.scss" />
+    <link rel="stylesheet" href="/css/productDetail.scss" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <title>Orchid Detail</title>
+</head>
+
+<body>
+    <% if (typeof orchid !=='undefined' ) { %>
+        <div class="product">
+            <div class="product-child">
+                <div class="product-left">
+                    <div class="images" style="background-image: url(<%= orchid.image %>);">
+                    </div>
+                </div>
+                <div class="product-right">
+                    <div class="product-top">
+                        <h1 class="product-collection">Orchid Collection</h1>
+                        <h1 class="product-name">
+                            <%= orchid.name %>
+                        </h1>
+
+                        <h4>Cate: <%= orchid.category.categoryName %>
+                        </h4>
+                        <h4>State: <%= orchid.origin %>
+                        </h4>
+                        <h4>Natural: <%= orchid.isNatural %>
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="comment">
+            <div class="comment-child">
+                <h2>Discussion</h2>
+                <% orchid.comments.forEach(function(comment, index) { %>
+                    <div class="comment-bg">
+                        <div class="comment-bg-child">
+                            <div class="comment-second-child">
+                                <h2>
+                                    <%= comment.author.username %>
+                                </h2>
+                                <div class="rating-comment">
+                                    <h3>
+                                        <%= comment.rating %>
+                                    </h3>
+                                    <i class="material-icons">star</i>
+                                </div>
+                            </div>
+                            <div>
+                                <p>
+                                    <%= comment.comment %>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <% }) %>
+            </div>
+        </div>
+        <% } %>
+</body>
+
+</html>

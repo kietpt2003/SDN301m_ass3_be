@@ -1,0 +1,60 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.scss" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <title>Create User</title>
+</head>
+
+<body>
+    <div class="topnav">
+        <a class="active" href="/">Orchids</a>
+        <a href="/categories">Categories</a>
+    </div>
+    <div class="form-add-new">
+        <form action="/users" method="post">
+            <fieldset>
+                <legend>Add new users</legend>
+                <% if (typeof errors !=='undefined' ) { %>
+                    <% if (errors.length> 0) { %>
+                        <div class="error-message">
+                            <ul>
+                                <% errors.forEach(error=> { %>
+                                    <li>
+                                        <%= error.msg %>
+                                    </li>
+                                    <% }); %>
+                            </ul>
+                        </div>
+                        <% } %>
+                            <% } %>
+
+                                <div class="input-group">
+                                    <label>Name: </label>
+                                    <% if (typeof errors !=='undefined' ) { %>
+                                        <input type="text" name="username" value="<%= username %>" />
+                                        <% } else { %>
+                                            <input type="text" name="username" />
+                                            <% } %>
+                                </div>
+                                <div class="input-group">
+                                    <label>Password: </label>
+                                    <% if (typeof errors !=='undefined' ) { %>
+                                        <input type="text" name="password" value="<%= password %>" />
+                                        <% } else { %>
+                                            <input type="text" name="password" />
+                                            <% } %>
+                                </div>
+                                <div>
+                                    <button>Save</button>
+                                </div>
+            </fieldset>
+        </form>
+    </div>
+
+</body>
+
+</html>

@@ -5,7 +5,8 @@ var userRouter = express.Router();
 
 userRouter.route("/")
     .get(userController.index)
-    .post(userController.register);
+    .post(userController.register)
+    .put(userController.update)
 
 userRouter.route("/login")
     .get(userController.login)

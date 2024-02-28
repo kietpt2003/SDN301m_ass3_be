@@ -1,7 +1,25 @@
 const mongoose = require('mongoose');
 const Orchids = require('../models/Orchids');
+const passport = require('passport');
 
 class orchidServices {
+    async getAllOrchids() {
+        const url = process.env.URL_DB;
+        await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+        let arrOrchids = [];
+        try {
+            arrOrchids = await Orchids.find({});
+
+            return arrOrchids;
+        } catch (error) {
+            console.log(error);
+            return arrOrchids;
+        } finally {
+            // Close the database connection
+            mongoose.connection.close();
+        }
+    }
+
     async getOrchidsByPage(pageReq) {
         try {
             let data = {
@@ -107,6 +125,7 @@ class orchidServices {
 
     async getOrchidByName(name, pageReq) {
         try {
+            console.log('check ', name);
             let data = {
                 orchidsArr: [],
                 page: 1,
@@ -127,7 +146,7 @@ class orchidServices {
 
                 data.orchidsArr = await Orchids.find({ name: { $regex: regex } })
                     .populate('category')
-                    .skip(startIndex).limit(data.itemsPerPage);
+                // .skip(startIndex).limit(data.itemsPerPage);
 
                 data.totalPages = Math.ceil(data.orchidsArr.length / data.itemsPerPage);
 

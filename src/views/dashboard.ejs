@@ -1,0 +1,95 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.scss" />
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="topnav">
+        <a class="active" href="/Orchids?i=<%= data._id %>">Orchids</a>
+        <a href="/categories">Categories</a>
+    </div>
+    <h1>This is admin page</h1>
+    <% if (typeof data !=='undefined' ) { %>
+        <h1>Welcome <%= data.username %>
+        </h1>
+        <div class="create-form">
+            <h2>Update User Form</h2>
+            <form id="update-form" action="http://localhost:8080/users?_method=PUT" method="POST">
+                <input id="id" type="text" name="id" hidden value="<%= data._id %>" />
+                <input id="id" type="text" name="currentUserName" hidden value="<%= data.username %>" />
+                <div class="input-group">
+                    <label for="username">User name:</label>
+                    <input id="username" type="text" name="username" value="<%= data.username %>" />
+                </div>
+                <!-- Empty name -->
+                <% if (typeof errors !=='undefined' ) { %>
+                    <% if (typeof errors.usNameErr !=='undefined' ) { %>
+                        <p class="error">
+                            <%= errors.usNameErr %>
+                        </p>
+                        <% } %>
+                            <% } %>
+                                <div class="input-group">
+                                    <label for="newPassword">New Password: </label>
+                                    <input id="newPassword" type="text" name="newPassword">
+                                </div>
+                                <!-- Password must be at least 6 characters. -->
+                                <% if (typeof errors !=='undefined' ) { %>
+                                    <% if (typeof errors.passLengthErr !=='undefined' ) { %>
+                                        <p class="error">
+                                            <%= errors.passLengthErr %>
+                                        </p>
+                                        <% } %>
+                                            <% } %>
+                                                <div class="input-group">
+                                                    <label for="confirmPassword">Confirm Password: </label>
+                                                    <input id="confirmPassword" type="text" name="confirmPassword">
+                                                </div>
+                                                <!-- Passwords do not match. -->
+                                                <% if (typeof errors !=='undefined' ) { %>
+                                                    <% if (typeof errors.passErr !=='undefined' ) { %>
+                                                        <p class="error">
+                                                            <%= errors.passErr %>
+                                                        </p>
+                                                        <% } %>
+                                                            <% } %>
+                                                                <div class="input-group">
+                                                                    <button type="submit">Update</button>
+                                                                </div>
+                                                                <!-- Required Id -->
+                                                                <% if (typeof errors !=='undefined' ) { %>
+                                                                    <% if (typeof errors.idRequired !=='undefined' ) {
+                                                                        %>
+                                                                        <p class="error">
+                                                                            <%= errors.idRequired %>
+                                                                        </p>
+                                                                        <% } %>
+                                                                            <% } %>
+            </form>
+        </div>
+        <% } %>
+            <% if(success_msg !='' ){ %>
+                <p style="color: green;">
+                    <%= success_msg %>
+                </p>
+                <% } %>
+                    <% if(error_msg !='' ){ %>
+                        <p style="color: blue;">
+                            <%= error %>
+                        </p>
+                        <% } %>
+
+                            <% if(error !='' ){ %>
+                                <p style="color: red;">
+                                    <%= error %>
+                                </p>
+
+                                <% } %>
+                                    <a href="/users/logout" class="btn btn-sm btn-label-danger">Log out</a>
+</body>
+
+</html>
