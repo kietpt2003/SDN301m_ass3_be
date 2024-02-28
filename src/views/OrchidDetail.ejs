@@ -10,6 +10,18 @@
 </head>
 
 <body>
+    <div class="topnav">
+        <% if (typeof authenticatedUser !=='undefined' ) { %>
+            <a class="active" href="/Orchids?i=<%= authenticatedUser.id %>">Orchids</a>
+            <% } else { %>
+                <a class="active" href="/Orchids">Orchids</a>
+                <% } %>
+                    <% if (typeof authenticatedUser !=='undefined' ) { %>
+                        <a href="/categories?i=<%= authenticatedUser.id %>">Categories</a>
+                        <% } else { %>
+                            <a href="/categories">Categories</a>
+                            <% } %>
+    </div>
     <% if (typeof orchid !=='undefined' ) { %>
         <div class="product">
             <div class="product-child">

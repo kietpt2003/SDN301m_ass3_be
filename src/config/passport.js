@@ -55,7 +55,13 @@ const passportIsAdmin = () => {
                 const url = process.env.URL_DB;
                 await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
                 try {
-                    const { i } = req.query; //i for userId
+                    let { i } = req.query; //i for userId
+                    if (!i) {
+                        i = req.body.i;
+                    }
+                    if (!i) {
+                        i = req.params.i;
+                    }
                     console.log('check user id: ', i);
 
                     // Find user by id and where isAdmin is true

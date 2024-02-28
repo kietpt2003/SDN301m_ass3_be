@@ -227,11 +227,17 @@
 
 <body>
     <div class="topnav">
-        <a class="active" href="/">Orchids</a>
-        <a href="/categories">Categories</a>
+        <% if (typeof authenticatedUser !=='undefined' ) { %>
+            <a class="active" href="/Orchids?i=<%= authenticatedUser.id %>">Orchids</a>
+            <% } else { %>
+                <a class="active" href="/Orchids">Orchids</a>
+                <% } %>
+                    <% if (typeof authenticatedUser !=='undefined' ) { %>
+                        <a href="/categories?i=<%= authenticatedUser.id %>">Categories</a>
+                        <% } else { %>
+                            <a href="/categories">Categories</a>
+                            <% } %>
     </div>
-
-
 
     <div style="display: flex;">
         <!-- Search form -->
@@ -521,6 +527,7 @@
         <div class="container">
             <% arrOrchids.forEach(function(orchid, index) { %>
                 <form id="delete-form<%= index %>" class="product" action="/Orchids/<%= orchid._id %>" method="get">
+                    <input type="hidden" name="i" value="<%= authenticatedUser.id %>">
                     <input type="text" hidden value="orchidById" />
                     <div class="product-left">
                         <div class="images" style="background-image: url(<%= orchid.image %>);">
