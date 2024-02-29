@@ -16,7 +16,7 @@ const passport = require('passport')
 const session = require('express-session');
 const flash = require('connect-flash');
 const usersRouter = require("./routes/usersRouter");
-const iniOrchidRoute = require("./routes/orchidRouter");
+const { iniOrchidRoute, orchidApiRoute } = require("./routes/orchidRouter");
 const initCategoryRouter = require('./routes/categoryRouter');
 const configPassport = require('./config/passport');
 
@@ -70,6 +70,9 @@ initCategoryRouter(app);
 
 //Init orchid routes
 iniOrchidRoute(app);
+
+//orchid api routes
+orchidApiRoute(app);
 
 app.use("/users", usersRouter);
 

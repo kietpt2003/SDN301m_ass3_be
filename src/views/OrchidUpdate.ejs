@@ -1,0 +1,171 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.scss" />
+    <link rel="stylesheet" href="/css/product.scss" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="topnav">
+        <% if (typeof authenticatedUser !=='undefined' ) { %>
+            <a class="active" href="/Orchids?i=<%= authenticatedUser.id %>">Orchids</a>
+            <% } else { %>
+                <a class="active" href="/Orchids">Orchids</a>
+                <% } %>
+                    <% if (typeof authenticatedUser !=='undefined' ) { %>
+                        <a href="/categories?i=<%= authenticatedUser.id %>">Categories</a>
+                        <% } else { %>
+                            <a href="/categories">Categories</a>
+                            <% } %>
+    </div>
+
+    <!-- Update form -->
+    <div class="create-form">
+        <h2>Update Orchid Form</h2>
+        <form id="create-form" action="/Orchids/update?_method=PUT" method="post">
+            <input type="text" name="i" value="<%= authenticatedUser.id %>" hidden />
+            <input type="hidden" name="id" value="<%= orchid._id %>">
+            <div class="input-group">
+                <label for="orchidName">Orchid name:</label>
+                <% if(typeof orchid !=='undefined' ) { %>
+                    <input type="text" name="name" value="<%= orchid.name %>" />
+                    <input type="text" name="currentName" value="<%= orchid.name %>" hidden />
+                    <% } else { %>
+                        <input type="text" name="name" />
+                        <input type="text" name="currentName" value="" hidden />
+                        <% } %>
+            </div>
+            <!-- Empty name -->
+            <% if (typeof error !=='undefined' ) { %>
+                <% if (typeof error.isEmptyName !=='undefined' ) { %>
+                    <p class="error">
+                        <%= error.isEmptyName %>
+                    </p>
+                    <% } %>
+                        <% } %>
+                            <div class="input-group">
+                                <label for="image">Image URL:</label>
+                                <% if(typeof orchid !=='undefined' ) { %>
+                                    <input type="text" name="image" value="<%= orchid.image %>" />
+                                    <% } else { %>
+                                        <input type="text" name="image" />
+                                        <% } %>
+                            </div>
+                            <!-- Empty Image URL -->
+                            <% if (typeof error !=='undefined' ) { %>
+                                <% if (typeof error.isEmptyImg !=='undefined' ) { %>
+                                    <p class="error">
+                                        <%= error.isEmptyImg %>
+                                    </p>
+                                    <% } %>
+                                        <% } %>
+                                            <div class="input-group">
+                                                <label for="origin">origin:</label>
+                                                <% if(typeof orchid !=='undefined' ) { %>
+                                                    <input type="text" name="origin" value="<%= orchid.origin %>" />
+                                                    <% } else { %>
+                                                        <input type="text" name="origin" />
+                                                        <% } %>
+                                            </div>
+                                            <!-- Empty origin -->
+                                            <% if (typeof error !=='undefined' ) { %>
+                                                <% if (typeof error.isEmptyOriginal !=='undefined' ) { %>
+                                                    <p class="error">
+                                                        <%= error.isEmptyOriginal %>
+                                                    </p>
+                                                    <% } %>
+                                                        <% } %>
+                                                            <div class="input-group">
+                                                                <label for="isNatural">Is
+                                                                    natural:</label>
+                                                                <% if(typeof orchid !=='undefined' ) { %>
+                                                                    <input type="text" name="isNatural"
+                                                                        value="<%= orchid.isNatural %>" />
+                                                                    <% } else { %>
+                                                                        <input type="text" name="isNatural" />
+                                                                        <% } %>
+                                                            </div>
+                                                            <!-- Error natural -->
+                                                            <% if (typeof error !=='undefined' ) { %>
+                                                                <% if (typeof error.isEmptyNatural !=='undefined' ) { %>
+                                                                    <p class="error">
+                                                                        <%= error.isEmptyNatural %>
+                                                                    </p>
+                                                                    <% } %>
+                                                                        <% } %>
+
+                                                                            <div class="custom-select">
+                                                                                <label for="orchid">Choose
+                                                                                    category:</label>
+                                                                                <select name="cateId">
+                                                                                    <% if(typeof orchid=='undefined' ) {
+                                                                                        %>
+                                                                                        <option value="" selected
+                                                                                            disabled hidden>Choose
+                                                                                            here
+                                                                                        </option>
+                                                                                        <% } %>
+                                                                                            <% if (typeof arrCategories
+                                                                                                !=='undefined' ) { %>
+                                                                                                <% arrCategories.forEach(function(category,
+                                                                                                    index) { %>
+                                                                                                    <% if(typeof orchid
+                                                                                                        !=='undefined'
+                                                                                                        &&category._id==orchid.cateId
+                                                                                                        ) { %>
+                                                                                                        <option
+                                                                                                            value="<%=category._id%>"
+                                                                                                            selected
+                                                                                                            disabled>
+                                                                                                            <%= category.categoryName
+                                                                                                                %>
+                                                                                                        </option>
+                                                                                                        <% } else { %>
+                                                                                                            <option
+                                                                                                                value="<%=category._id%>">
+                                                                                                                <%= category.categoryName
+                                                                                                                    %>
+                                                                                                            </option>
+                                                                                                            <% } %>
+                                                                                                                <% }) %>
+                                                                                                                    <% }
+                                                                                                                        %>
+                                                                                </select>
+                                                                            </div>
+                                                                            <!-- Error category -->
+                                                                            <% if (typeof error !=='undefined' ) { %>
+                                                                                <% if (typeof error.isEmptyCate
+                                                                                    !=='undefined' ) { %>
+                                                                                    <p class="error">
+                                                                                        <%= error.isEmptyCate %>
+                                                                                    </p>
+                                                                                    <% } %>
+                                                                                        <% } %>
+
+                                                                                            <div class="input-group">
+                                                                                                <button
+                                                                                                    type="submit">Update</button>
+                                                                                            </div>
+                                                                                            <!-- Duplicate -->
+                                                                                            <% if (typeof error
+                                                                                                !=='undefined' ) { %>
+                                                                                                <% if (typeof
+                                                                                                    error.isDup
+                                                                                                    !=='undefined' ) {
+                                                                                                    %>
+                                                                                                    <p class="error">
+                                                                                                        <%= error.isDup
+                                                                                                            %>
+                                                                                                    </p>
+                                                                                                    <% } %>
+                                                                                                        <% } %>
+        </form>
+    </div>
+</body>
+
+</html>

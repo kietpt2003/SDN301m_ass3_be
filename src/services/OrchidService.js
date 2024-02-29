@@ -1,19 +1,22 @@
 const mongoose = require('mongoose');
 const Orchids = require('../models/Orchids');
 const passport = require('passport');
+const Categories = require('../models/Categories');
+const CategoryService = require('./CategoryService');
 
 class orchidServices {
     async getAllOrchids() {
         const url = process.env.URL_DB;
         await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
         let arrOrchids = [];
+        let arrCategories = []
         try {
-            arrOrchids = await Orchids.find({});
-
-            return arrOrchids;
+            arrOrchids = await Orchids.find({}).populate('category');
+            arrCategories = await Categories.find({})
+            return { arrOrchids, arrCategories };
         } catch (error) {
             console.log(error);
-            return arrOrchids;
+            return { arrOrchids, arrCategories };
         } finally {
             // Close the database connection
             mongoose.connection.close();
@@ -179,243 +182,238 @@ class orchidServices {
     }
 
     async createOrchid(newOrchid) {
-        return new Promise(async (resolve, reject) => {
+        try {
+            let error = {}
+            let isError = false
+
+            let arrCategories = [];
+
             try {
-                let error = {}
-                let isError = false
-                // let arr = await getAllOrchids();
-                if (newOrchid.name === '' || newOrchid.name === undefined) {
-                    error.isEmptyName = 'Name cannot be empty';
+                const url = process.env.URL_DB;
+                await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+                arrCategories = await Categories.find({})
+            } catch (error) {
+                arrOrchids = [];
+                arrCategories = [];
+            } finally {
+                // Close the database connection
+                mongoose.connection.close();
+            }
+            console.log('check cate:', newOrchid.cateId);
+
+            if (newOrchid.orchidName === '' || newOrchid.orchidName === undefined) {
+                error.isEmptyName = 'Name cannot be empty';
+                isError = true;
+            }
+            if (newOrchid.image === '' || newOrchid.image === undefined) {
+                error.isEmptyImg = 'Image cannot be empty';
+                isError = true;
+            }
+            if (newOrchid.cateId === '' || newOrchid.cateId === undefined) {
+                error.isEmptyCate = 'Please choose category';
+                isError = true;
+            }
+            if (newOrchid.origin === '' || newOrchid.origin === undefined) {
+                error.isEmptyOriginal = 'Origin cannot be empty';
+                isError = true;
+            }
+            if (newOrchid.isNatural === '' || newOrchid.isNatural === undefined) {
+                error.isEmptyNatural = 'Natural cannot be empty';
+                isError = true;
+            } else {
+                if (newOrchid.isNatural !== 'true' && newOrchid.isNatural !== 'false') {
+                    error.isEmptyNatural = `Natural must be 'true' or 'false'`;
                     isError = true;
                 }
-                if (newOrchid.image === '' || newOrchid.image === undefined) {
-                    error.isEmptyImg = 'Image cannot be empty';
-                    isError = true;
+            }
+            if (isError) {
+                return {
+                    data: { arrCategories, currentOrchid: newOrchid },
+                    error: error,
                 }
-                if (newOrchid.price === '' || newOrchid.price === undefined) {
-                    error.isEmptyPrice = 'Price cannot be empty';
-                    isError = true;
-                } else {
-                    if (!isNumber(newOrchid.price)) {
-                        error.invalidPrice = 'Price must be a number';
-                        isError = true;
+            }
+            let isExist = await checkOrchidName(newOrchid.orchidName);
+            if (isExist) {
+                error.isDup = 'Name Duplicated';
+                isError = true;
+                return {
+                    data: { arrCategories, currentOrchid: newOrchid },
+                    error: error,
+                }
+            }
+            if (!isError) {
+                console.log('check cateId: ', newOrchid.cateId);
+                const cate = await CategoryService.getCategoryById(newOrchid.cateId);
+                console.log('check cate data: ', cate.data);
+                let data = {};
+                let orc = {};
+                try {
+                    const url = process.env.URL_DB;
+                    await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+
+                    data = new Orchids({ name: newOrchid.orchidName, image: newOrchid.image, origin: newOrchid.origin, isNatural: newOrchid.isNatural === 'true' ? true : false, category: cate.data._id });
+                    orc = await data.save();
+                } catch (error) {
+                    console.log(error);
+                    return {
+                        data: { arrCategories, currentOrchid: newOrchid },
                     }
+                } finally {
+                    // Close the database connection
+                    mongoose.connection.close();
                 }
-                if (newOrchid.original === '' || newOrchid.original === undefined) {
-                    error.isEmptyOriginal = 'Original cannot be empty';
-                    isError = true;
-                }
-                if (newOrchid.isNatural === '' || newOrchid.isNatural === undefined) {
-                    error.isEmptyNatural = 'Natural cannot be empty';
-                    isError = true;
-                } else {
-                    if (newOrchid.isNatural !== 'true' && newOrchid.isNatural !== 'false') {
-                        error.isEmptyNatural = `Natural must be 'true' or 'false'`;
-                        isError = true;
+                console.log('check orc ', orc);
+                if (orc) {
+                    arrCategories = []
+                    try {
+                        const url = process.env.URL_DB;
+                        await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+                        arrCategories = await Categories.find({})
+                        return {
+                            data: { arrCategories },
+                            isSuccess: true
+                        };
+                    } catch (error) {
+                        console.log(error);
+                        return {
+                            data: { arrCategories, currentOrchid: newOrchid },
+                        };
+                    } finally {
+                        // Close the database connection
+                        mongoose.connection.close();
                     }
-                }
-                if (newOrchid.color === '' || newOrchid.color === undefined) {
-                    error.isEmptyColor = 'Color cannot be empty';
-                    isError = true;
-                }
-                if (isError) {
-                    resolve({
+                } else {
+                    error.createfailed = 'Something wrong';
+                    return {
+                        data: { arrCategories },
                         error: error,
-                        // arrOrchids: arr
-                    })
+                    };
                 }
+            }
+        } catch (error) {
+            return { error: error };
+        }
+    }
+
+    async updateOrc(newOrchid) {
+        try {
+            let error = {}
+            let isError = false;
+
+            if (newOrchid.name === '' || newOrchid.name === undefined) {
+                error.isEmptyName = 'Name cannot be empty';
+                isError = true;
+            }
+            if (newOrchid.image === '' || newOrchid.image === undefined) {
+                error.isEmptyImg = 'Image cannot be empty';
+                isError = true;
+            }
+            if (newOrchid.cateId === '' || newOrchid.cateId === undefined) {
+                error.isEmptyCate = 'Please choose category';
+                isError = true;
+            }
+            if (newOrchid.origin === '' || newOrchid.origin === undefined) {
+                error.isEmptyOriginal = 'Origin cannot be empty';
+                isError = true;
+            }
+            if (newOrchid.isNatural === '' || newOrchid.isNatural === undefined) {
+                error.isEmptyNatural = 'Natural cannot be empty';
+                isError = true;
+            } else {
+                if (newOrchid.isNatural !== 'true' && newOrchid.isNatural !== 'false') {
+                    error.isEmptyNatural = `Natural must be 'true' or 'false'`;
+                    isError = true;
+                }
+            }
+            if (isError) {
+                return {
+                    data: { currentOrchid: newOrchid },
+                    error: error,
+                }
+            }
+
+            if (newOrchid.name !== newOrchid.currentName) {
+                console.log('vo day: ', newOrchid.name, 'cur:', newOrchid.currentName);
                 let isExist = await checkOrchidName(newOrchid.name);
                 if (isExist) {
                     error.isDup = 'Name Duplicated';
                     isError = true;
-                    resolve({
+                    return {
+                        data: { currentOrchid: newOrchid },
                         error: error,
-                        // arrOrchids: arr
-                    })
+                    }
                 }
-                if (!isError) {
-                    const url = process.env.URL_DB;
-                    const connect = mongoose.connect(url, { family: 4 });
-                    connect.then(() => {
-                        Orchids({ name: newOrchid.name, image: newOrchid.image, price: newOrchid.price, original: newOrchid.original, isNatural: newOrchid.isNatural === 'true' ? true : false, color: newOrchid.color }).save()
-                            .then(async (orc) => {
-                                if (orc) {
-                                    // arr = await getAllOrchids();
-                                    await mongoose.disconnect();
-                                    resolve({
-                                        // arrOrchids: arr,
-                                        data: orc,
-                                        isSuccess: true
-                                    });
-                                } else {
-                                    error.createfailed = 'Something wrong';
-                                    await mongoose.disconnect();
-                                    resolve({
-                                        error: error,
-                                        // arrOrchids: arr
-                                    })
-                                }
-                            });
-                    })
-                }
-            } catch (error) {
-                await mongoose.disconnect();
-                resolve(error);
             }
-        })
-    }
 
-    async updateOrc(orc) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                let error = {}
-                let isError = false;
-                let isExist = false;
-                // let arr = await getAllOrchids();
-                if (orc.id === '' || orc.id === undefined) {
-                    error.invalidId = "Required Id";
-                    isError = true;
-                    return resolve({
-                        errorUpdate: error
-                    });
-                } else {
-                    isExist = await checkOrchidById(orc.id);
-                }
-                if (isExist) {
-                    if (orc.name === '' || orc.name === undefined) {
-                        error.isEmptyName = 'Name cannot be empty';
-                        isError = true;
-                    }
-                    if (orc.image === '' || orc.image === undefined) {
-                        error.isEmptyImg = 'Image URL cannot be empty';
-                        isError = true;
-                    }
-                    if (orc.price === '' || orc.price === undefined) {
-                        error.isEmptyPrice = 'Price cannot be empty';
-                        isError = true;
-                    } else {
-                        if (!isNumber(orc.price)) {
-                            error.invalidPrice = 'Price must be a number';
-                            isError = true;
-                        }
-                    }
-                    if (orc.original === '' || orc.original === undefined) {
-                        error.isEmptyOriginal = 'Original cannot be empty';
-                        isError = true;
-                    }
-                    if (orc.isNatural === '' || orc.isNatural === undefined) {
-                        error.isEmptyNatural = 'Natural cannot be empty';
-                        isError = true;
-                    }
-                    if (orc.color === '' || orc.color === undefined) {
-                        error.isEmptyColor = 'Color cannot be empty';
-                        isError = true;
-                    }
-                    if (isError) {
-                        return resolve({
-                            errorUpdate: error,
-                            // arrOrchids: arr
-                        })
-                    }
-                    isExist = await checkOrchidName(orc.name);
-                    if (isExist) {
-                        if (orc.name !== orc.currentName) {
-                            error.isDup = 'Name Duplicated';
-                            isError = true;
-                            return resolve({
-                                errorUpdate: error,
-                                // arrOrchids: arr
-                            })
-                        }
-                    }
-                } else {
-                    error.invalidId = "Id doesn't exist.";
-                    isError = true;
-                    return resolve({
-                        errorUpdate: error,
-                        // arrCategories: arr
-                    })
-                }
-                if (!isError) {
+            if (!isError) {
+                console.log('check cateId: ', newOrchid.cateId);
+                const cate = await CategoryService.getCategoryById(newOrchid.cateId);
+                let data = {};
+                try {
                     const url = process.env.URL_DB;
-                    const connect = mongoose.connect(url, { family: 4 });
-                    connect.then(() => {
-                        Orchids.updateOne({ _id: orc.id }, { $set: { name: orc.name, image: orc.image, price: orc.price, original: orc.original, isNatural: orc.isNatural === 'true' ? true : false, color: orc.color } })
-                            .then(async (isUpdated) => {
-                                if (isUpdated.modifiedCount >= 1) {
-                                    // arr = await getAllOrchids();
-                                    await mongoose.disconnect();
-                                    return resolve({
-                                        // arrOrchids: arr,
-                                        data: isUpdated,
-                                        isUpdate: true
-                                    });
-                                } else {
-                                    error.createfailed = 'Something wrong';
-                                    await mongoose.disconnect();
-                                    return resolve({
-                                        errorUpdate: error,
-                                        // arrOrchids: arr
-                                    })
-                                }
-                            });
-                    })
+                    await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+
+                    data = await Orchids.updateOne({ _id: newOrchid.id }, { $set: { name: newOrchid.name, image: newOrchid.image, origin: newOrchid.origin, isNatural: newOrchid.isNatural === 'true' ? true : false, category: cate.data._id } })
+                    if (data.modifiedCount >= 1) {
+                        return {
+                            isSuccess: true
+                        };
+                    } else {
+                        error.createfailed = 'Something wrong';
+                        return {
+                            data: { currentOrchid: newOrchid },
+                            error: error,
+                        };
+                    }
+                } catch (error) {
+                    console.log(error);
+                    return {
+                        data: { currentOrchid: newOrchid },
+                    }
+                } finally {
+                    // Close the database connection
+                    mongoose.connection.close();
                 }
-            } catch (error) {
-                console.log('Something wrong: ', error)
-                resolve(error);
             }
-        })
+        } catch (error) {
+            console.log('Something wrong: ', error)
+            return {
+                error: error,
+            };
+        }
     }
 
     async deleteOrchidById(id) {
-        return new Promise(async (resolve, reject) => {
+        const error = {}
+        // let arrOrchids = await getAllOrchids();
+        const isExist = await checkOrchidById(id);
+        if (isExist) {
             try {
-                const error = {}
-                // let arrOrchids = await getAllOrchids();
-                const isExist = await checkOrchidById(id);
-                if (isExist) {
-                    const url = process.env.URL_DB;
-                    const connect = mongoose.connect(url, { family: 4 });
-                    connect.then(() => {
-                        Orchids.deleteOne({ "_id": id })
-                            .then(async (category) => {
-                                // arrOrchids = await getAllOrchids();
-                                await mongoose.disconnect();
-                                resolve(
-                                    {
-                                        data: category,
-                                        deleteSuccess: true,
-                                        // arrOrchids: arrOrchids
-                                    }
-                                )
-                                return category;
-                            })
-                            .catch(async (err) => {
-                                console.log('error check: ', err);
-                                error.dbError = 'Something wrong with DB';
-                                await mongoose.disconnect();
-                                resolve(
-                                    {
-                                        error: error,
-                                        // arrOrchids: arrOrchids
-                                    }
-                                )
-                            });
-                    })
-                } else {
-                    error.missingId = 'Missing Id or wrong Id'
-                    resolve(
-                        {
-                            error: error,
-                            // arrOrchids: arrOrchids
-                        }
-                    )
+                const url = process.env.URL_DB;
+                await mongoose.connect(url, { family: 4 });
+                const data = await Orchids.deleteOne({ "_id": id })
+                if (data) {
+                    return {
+                        data: data,
+                        deleteSuccess: true,
+                    }
                 }
-            } catch (error) {
-                resolve(error)
+            } catch (err) {
+                console.log(err);
+                error.dbError = 'Something wrong with DB';
+                return {
+                    error: error
+                }
+            } finally {
+                // Close the database connection
+                mongoose.connection.close();
             }
-        })
+        } else {
+            error.missingId = 'Missing Id or wrong Id'
+            return {
+                error: error
+            }
+        }
     }
 }
 
@@ -429,7 +427,7 @@ let checkOrchidName = (name) => {
     return new Promise(async (resolve, reject) => {
         try {
             const url = process.env.URL_DB;
-            const connect = mongoose.connect(url, { family: 4 });
+            const connect = mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
             connect.then(() => {
                 Orchids.findOne({ name: name })
                     .then(async (orchid) => {
@@ -453,34 +451,26 @@ let checkOrchidName = (name) => {
     })
 }
 
-let checkOrchidById = (id) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            if (id !== '' && id !== undefined) {
-                const url = process.env.URL_DB;
-                const connect = mongoose.connect(url, { family: 4 });
-                connect.then(() => {
-                    Orchids.findOne({ _id: id })
-                        .then((orchid) => {
-                            mongoose.disconnect().then(() => {
-                                if (orchid) {
-                                    resolve(true);
-                                }
-                                resolve(false);
-                            });
-                        })
-                        .catch((err) => {
-                            console.log(err);
-                            resolve(false);
-                        });
-                })
-            } else {
-                resolve(false);
+let checkOrchidById = async (id) => {
+    try {
+        if (id !== '' && id !== undefined) {
+            const url = process.env.URL_DB;
+            await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+            const data = await Orchids.findOne({ _id: id })
+            if (data) {
+                return true;
             }
-        } catch (error) {
-            resolve(error)
+            return false;
+        } else {
+            return false;
         }
-    })
+    } catch (error) {
+        console.log(error);
+        return false
+    } finally {
+        // Close the database connection
+        mongoose.connection.close();
+    }
 }
 
 async function isIdValid(id, model) {

@@ -42,10 +42,24 @@
                         </h4>
                         <h4>Natural: <%= orchid.isNatural %>
                         </h4>
+                        <% if (authenticatedUser.isAdmin) { %>
+                            <div class="row-buttons">
+                                <a href="/orchids/update/<%= orchid._id %>?i=<%= authenticatedUser.id %>"
+                                    class="button button-update">Update
+                                    Page</a>
+                                <form action="/Orchids/delete?_method=DELETE" method="post">
+                                    <input hidden name="id" value="<%= orchid._id %>" />
+                                    <input hidden name="i" value="<%= authenticatedUser.id %>" />
+                                    <button type="submit" class="button button-delete">Delete</button>
+                                </form>
+                            </div>
+                            <% } %>
                     </div>
                 </div>
             </div>
         </div>
+
+
         <div class="comment">
             <div class="comment-child">
                 <h2>Discussion</h2>

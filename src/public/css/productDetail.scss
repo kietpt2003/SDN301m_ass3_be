@@ -96,3 +96,34 @@
         }
     }
 }
+
+.row-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Adjust styles as needed */
+.button-update {
+    background-color: #008CBA;
+}
+
+.button-create {
+    background-color: #f44336;
+}
+
+.button-delete {
+    background-color: #1d880f;
+}

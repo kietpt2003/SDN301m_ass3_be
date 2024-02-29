@@ -22,6 +22,95 @@ class categoryServices {
         return arrCategories;
     }
 
+    async getCategoryById(id) {
+        try {
+            let data = {}
+
+            const url = process.env.URL_DB;
+            await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+            try {
+                data = await Categories.findById(id)
+            } catch (error) {
+                console.log('err: ', error);
+            }
+
+            if (data) {
+                return {
+                    status: 200,
+                    data: data,
+                    message: "OK"
+                };
+            } else {
+                return {
+                    status: 200,
+                    data: {},
+                    message: "No data"
+                }
+            }
+        } catch (error) {
+            return {
+                status: 500,
+                messageError: error,
+            }
+        } finally {
+            // Close the database connection
+            mongoose.connection.close();
+        }
+    }
+
+    async getCatetgoryByName(name, pageReq) {
+        try {
+            let data = {
+                category: {},
+                page: 1,
+                totalPages: 1,
+                itemsPerPage: 10,
+            };
+            data.itemsPerPage = 10;
+            // Parse query parameters
+            data.page = parseInt(pageReq) || 1;
+            const regex = new RegExp(name, "i");
+
+            // Calculate start and end indices for the current page
+            const startIndex = (data.page - 1) * data.itemsPerPage;
+
+            const url = process.env.URL_DB;
+            await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+            try {
+
+                data.category = await Categories.find({ categoryName: { $regex: regex } })
+                // .skip(startIndex).limit(data.itemsPerPage);
+
+                data.totalPages = Math.ceil(data.category.length / data.itemsPerPage);
+
+            } catch (error) {
+                console.log('err: ', error);
+            }
+
+            if (data) {
+                return {
+                    status: 200,
+                    data: data,
+                    message: "OK"
+                };
+            } else {
+                return {
+                    status: 200,
+                    data: {},
+                    message: "No data"
+                }
+            }
+        } catch (error) {
+            return {
+                status: 500,
+                messageError: error,
+            }
+        } finally {
+            // Close the database connection
+            mongoose.connection.close();
+        }
+    }
+
     async createCategory(newCategory) {
         return new Promise(async (resolve, reject) => {
             try {
