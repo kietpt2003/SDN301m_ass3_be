@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-// import { commentSchema } from './Comments';
 const { commentSchema } = require('./Comments');
 const Schema = mongoose.Schema;
 

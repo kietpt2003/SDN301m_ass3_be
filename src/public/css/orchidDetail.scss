@@ -1,0 +1,252 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 60px 0 0;
+}
+
+.topnav {
+    overflow: hidden;
+    background-color: #333;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000; /* Ensure the navbar is above other elements */
+}
+
+.topnav a {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.topnav a.active {
+    background-color: #3498db;
+    color: white;
+}
+
+.product {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+}
+
+.product-child {
+    display: flex;
+}
+
+.product-left {
+    flex: 1;
+    overflow: hidden;
+}
+
+.images {
+    background-size: cover;
+    background-position: center;
+    height: 300px;
+    width: 300px;
+}
+
+.product-right {
+    flex: 1;
+    padding: 20px;
+}
+
+.product-top {
+    margin-bottom: 20px;
+}
+
+.product-collection {
+    color: #3498db;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.product-name {
+    font-size: 24px;
+    margin: 0;
+}
+
+.comment {
+    background-color: #f4f4f4;
+    margin: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.comment-child {
+    margin-top: 20px;
+}
+
+.comment-bg {
+    background-color: #fff;
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.comment-bg-child {
+    display: flex;
+    justify-content: space-between;
+}
+
+.comment-second-child {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.rating-comment {
+    display: flex;
+    align-items: center;
+}
+
+.rating-comment h3 {
+    margin: 0;
+    margin-right: 5px;
+}
+
+.material-icons {
+    color: #f39c12;
+    font-size: 18px;
+}
+
+a.button-update {
+    background-color: #3498db;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition-duration: 0.4s;
+}
+
+a.button-update:hover {
+    background-color: #555;
+}
+
+#update-form {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px;
+}
+
+#update-form h2 {
+    color: #3498db;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+#update-form .input-group {
+    margin-bottom: 15px;
+}
+
+#update-form label {
+    color: #333;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#update-form .input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#update-form .error {
+    color: red;
+    margin-top: 5px;
+}
+
+#update-form button[type="submit"] {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition-duration: 0.4s;
+}
+
+#update-form button[type="submit"]:hover {
+    background-color: #555;
+}
+
+/* Delete button styling */
+.button-delete {
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition-duration: 0.4s;
+    margin-top: 10px;
+}
+
+.button-delete:hover {
+    background-color: #c0392b;
+}
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+  
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+/* Add animation (fade out the popup) */
+@-webkit-keyframes fadeOut {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+  
+@keyframes fadeOut {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+
+/* The alert message box */
+.alert {
+    width: 30%;
+    position: sticky;
+    bottom: 1rem;
+    left: 1rem;
+    padding: 1rem;
+    background-color: green;
+    color: white;
+    border-radius: 1rem;
+    //animation
+    visibility: visible;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s;
+    -webkit-animation: fadeOut 3s;
+    animation: fadeOut 3s forwards;
+    /* The close button */
+    .closebtn {
+        margin-left: 1rem;
+        color: white;
+        font-weight: bold;
+        float: right;
+        font-size: 22px;
+        line-height: 20px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+      
+}

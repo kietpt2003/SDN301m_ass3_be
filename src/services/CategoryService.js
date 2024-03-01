@@ -1,23 +1,20 @@
 const mongoose = require('mongoose');
 const Categories = require('../models/Categories');
+const Orchids = require('../models/Orchids');
 class categoryServices {
     async getAllCategories() {
-        const url = process.env.URL_DB;
-        const connect = mongoose.connect(url, { family: 4 });
         let arrCategories = [];
-
-        arrCategories = connect.then(() => {
-            console.log('Connected correctly to server');
-            return Categories.find({})
-                .then(async (categories) => {
-                    await mongoose.disconnect();
-                    return categories;
-                })
-                .catch((err) => {
-                    console.log(err);
-                    arrCategories = [];
-                });
-        });
+        try {
+            const url = process.env.URL_DB;
+            await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+            arrCategories = await Categories.find({});
+            return arrCategories;
+        } catch (error) {
+            console.log(err);
+        } finally {
+            // Close the database connection
+            mongoose.connection.close();
+        }
 
         return arrCategories;
     }
@@ -85,6 +82,9 @@ class categoryServices {
 
             } catch (error) {
                 console.log('err: ', error);
+            } finally {
+                // Close the database connection
+                mongoose.connection.close();
             }
 
             if (data) {
@@ -105,262 +105,235 @@ class categoryServices {
                 status: 500,
                 messageError: error,
             }
-        } finally {
-            // Close the database connection
-            mongoose.connection.close();
         }
     }
 
     async createCategory(newCategory) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                let error = {}
-                let isError = false
-                // let arr = await getAllCategories();
-                if (newCategory.cateName === '' || newCategory.cateName === undefined) {
-                    error.isEmptyName = 'Name cannot be empty';
-                    isError = true;
-                }
-                if (newCategory.description === '' || newCategory.description === undefined) {
-                    error.isEmptyDes = 'Description cannot be empty';
-                    isError = true;
-                }
-                if (isError) {
-                    resolve({
-                        error: error,
-                        // arrCategories: arr
-                    })
-                }
-                let isExist = await checkCateName(newCategory.cateName);
-                if (isExist) {
-                    error.isDup = 'Name Duplicated';
-                    isError = true;
-                    resolve({
-                        error: error,
-                        // arrCategories: arr
-                    })
-                }
-                if (!isError) {
-                    const url = process.env.URL_DB;
-                    const connect = mongoose.connect(url, { family: 4 });
-                    connect.then(() => {
-                        Categories({ name: newCategory.cateName, description: newCategory.description }).save()
-                            .then(async (cate) => {
-                                if (cate) {
-                                    // arr = await getAllCategories();
-                                    await mongoose.disconnect();
-                                    resolve({
-                                        // arrCategories: arr,
-                                        data: cate,
-                                        isSuccess: true
-                                    });
-                                } else {
-                                    error.createfailed = 'Something wrong';
-                                    await mongoose.disconnect();
-                                    resolve({
-                                        error: error,
-                                        // arrCategories: arr
-                                    })
-                                }
-                            });
-                    })
-                }
-            } catch (error) {
-                await mongoose.disconnect();
-                resolve(error);
+        try {
+            let error = {}
+            let isError = false
+
+            if (newCategory.categoryName === '' || newCategory.categoryName === undefined) {
+                error.isEmptyName = 'Name cannot be empty';
+                isError = true;
             }
-        })
+            if (isError) {
+                return {
+                    data: { currentCategory: newCategory },
+                    error: error,
+                }
+            }
+            let isExist = await checkCateName(newCategory.categoryName);
+            if (isExist) {
+                error.isDup = 'Name Duplicated';
+                isError = true;
+                return {
+                    data: { currentCategory: newCategory },
+                    error: error,
+                }
+            }
+            if (!isError) {
+                let cate = {};
+                let data = {};
+
+                try {
+                    const url = process.env.URL_DB;
+                    await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+                    data = new Categories({ categoryName: newCategory.categoryName, description: newCategory.description })
+                    cate = await data.save();
+                } catch (error) {
+                    console.log(error);
+                    return {
+                        data: { currentCategory: newCategory },
+                    }
+                } finally {
+                    // Close the database connection
+                    mongoose.connection.close();
+                }
+                if (cate) {
+                    return {
+                        isSuccess: true
+                    };
+                } else {
+                    error.createfailed = 'Something wrong';
+                    return {
+                        data: { currentCategory: newCategory },
+                        error: error,
+                    };
+                }
+            }
+        } catch (error) {
+            console.log(error);
+            return { error: error };
+        }
     }
 
     async updateCate(cate) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                let error = {}
-                let isError = false;
-                let isExist = false;
-                if (cate.id === '' || cate.id === undefined) {
-                    error.invalidId = "Required Id";
-                    isError = true;
-                    resolve({
-                        errorUpdate: error
-                    });
-                } else {
-                    isExist = await checkCategoryById(cate.id);
+        try {
+            let error = {}
+            let isError = false;
+            console.log('check cate:', cate);
+            if (cate.categoryName === '' || cate.categoryName === undefined) {
+                error.isEmptyName = 'Name cannot be empty';
+                isError = true;
+            }
+            if (isError) {
+                return {
+                    data: { currentCategory: cate },
+                    error: error,
                 }
-                // let arr = await getAllCategories();
+            }
+
+            if (cate.categoryName !== cate.currentName) {
+                let isExist = await checkCateName(cate.categoryName);
                 if (isExist) {
-                    if (cate.name === '' || cate.name === undefined) {
-                        error.isEmptyName = 'Name cannot be empty';
+                    if (cate.categoryName !== cate.currentName) {
+                        error.isDup = 'Name Duplicated';
                         isError = true;
-                    }
-                    if (cate.description === '' || cate.description === undefined) {
-                        error.isEmptyDes = 'Description cannot be empty';
-                        isError = true;
-                    }
-                    if (isError) {
-                        resolve({
-                            errorUpdate: error,
-                            // arrCategories: arr
-                        })
-                    }
-                    isExist = await checkCateName(cate.name);
-                    if (isExist) {
-                        if (cate.name !== cate.currentName) {
-                            error.isDup = 'Name Duplicated';
-                            isError = true;
-                            resolve({
-                                errorUpdate: error,
-                                // arrCategories: arr
-                            })
+                        return {
+                            data: { currentCategory: cate },
+                            error: error,
                         }
                     }
-                } else {
-                    error.invalidId = "Id doesn't exist.";
-                    isError = true;
-                    resolve({
-                        errorUpdate: error,
-                        // arrCategories: arr
-                    })
                 }
-                if (!isError) {
-                    const url = process.env.URL_DB;
-                    const connect = mongoose.connect(url, { family: 4 });
-                    connect.then(() => {
-                        Categories.updateOne({ _id: cate.id }, { $set: { name: cate.name, description: cate.description } })
-                            .then(async (isUpdated) => {
-                                if (isUpdated.modifiedCount >= 1) {
-                                    // arr = await getAllCategories();
-                                    await mongoose.disconnect();
-                                    resolve({
-                                        // arrCategories: arr,
-                                        data: isUpdated,
-                                        isUpdate: true
-                                    });
-                                } else {
-                                    error.createfailed = 'Something wrong';
-                                    await mongoose.disconnect();
-                                    resolve({
-                                        errorUpdate: error,
-                                        // arrCategories: arr
-                                    })
-                                }
-                            });
-                    })
-                }
-            } catch (error) {
-                console.log('Something wrong: ', error)
-                resolve(error);
             }
-        })
+
+            if (!isError) {
+                let data = {};
+                try {
+                    const url = process.env.URL_DB;
+                    await mongoose.connect(url, { family: 4 });
+                    data = await Categories.updateOne({ _id: cate.id }, { $set: { categoryName: cate.categoryName } })
+                    if (data.modifiedCount >= 1) {
+                        return {
+                            isSuccess: true
+                        };
+                    } else {
+                        error.createfailed = 'Something wrong';
+                        return {
+                            data: { currentCategory: cate },
+                            error: error,
+                        };
+                    }
+
+                } catch (error) {
+                    console.log(error);
+                    return {
+                        data: { currentCategory: cate },
+                    }
+                } finally {
+                    // Close the database connection
+                    mongoose.connection.close();
+                }
+
+            }
+        } catch (error) {
+            console.log('Something wrong: ', error)
+            return {
+                error: error,
+            };
+        }
     }
 
     async deleteCategoryById(id) {
-        return new Promise(async (resolve, reject) => {
+        const error = {}
+
+        const isExist = await checkCategoryById(id);
+        const isError = await checkCateIsUsed(id);
+        if (isError) {
+            error.deleteFailed = 'Cannot delete cate that is used.';
+            return {
+                error: error,
+            };
+        }
+        if (isExist) {
             try {
-                const error = {}
-                // let arrCategories = await getAllCategories();
-                const isExist = await checkCategoryById(id);
-                if (isExist) {
-                    const url = process.env.URL_DB;
-                    const connect = mongoose.connect(url, { family: 4 });
-                    connect.then(() => {
-                        Categories.deleteOne({ "_id": id })
-                            .then(async (category) => {
-                                // arrCategories = await getAllCategories();
-                                await mongoose.disconnect();
-                                resolve(
-                                    {
-                                        data: category,
-                                        deleteSuccess: true,
-                                        // arrCategories: arrCategories
-                                    }
-                                )
-                                return category;
-                            })
-                            .catch(async (err) => {
-                                console.log('error check: ', err);
-                                error.dbError = 'Something wrong with DB';
-                                await mongoose.disconnect();
-                                resolve(
-                                    {
-                                        error: error,
-                                        // arrCategories: arrCategories
-                                    }
-                                )
-                            });
-                    })
-                } else {
-                    error.missingId = 'Missing Id or wrong Id'
-                    resolve(
-                        {
-                            error: error,
-                            // arrCategories: arrCategories
-                        }
-                    )
+                const url = process.env.URL_DB;
+                await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+                const data = await Categories.deleteOne({ "_id": id })
+                if (data) {
+                    return {
+                        data: data,
+                        deleteSuccess: true,
+                    }
                 }
-            } catch (error) {
-                resolve({ error: error })
+            } catch (err) {
+                console.log('error check: ', err);
+                error.dbError = 'Something wrong with DB';
+                return {
+                    error: error
+                }
+            } finally {
+                // Close the database connection
+                mongoose.connection.close();
             }
-        })
+        } else {
+            error.missingId = 'Missing Id or wrong Id'
+            return {
+                error: error
+            }
+        }
+
     }
 }
 
-let checkCateName = (name) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const url = process.env.URL_DB;
-            const connect = mongoose.connect(url, { family: 4 });
-            connect.then(() => {
-                Categories.findOne({ name: name })
-                    .then(async (category) => {
-                        if (category) {
-                            await mongoose.disconnect();
-                            resolve(true);
-                        } else {
-                            await mongoose.disconnect();
-                            resolve(false);
-                        }
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                        resolve(false);
-                    });
-            })
-        } catch (error) {
-            console.log('Catch error: ', error);
-            resolve(false);
+let checkCateName = async (name) => {
+    try {
+        const url = process.env.URL_DB;
+        await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+        const data = await Categories.findOne({ categoryName: name });
+        if (data) {
+            return true;
         }
-    })
+        return false;
+    } catch (error) {
+        console.log('Catch error: ', error);
+        return false;
+    }
 }
 
-let checkCategoryById = (id) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            if (id !== '' && id !== undefined) {
-                const url = process.env.URL_DB;
-                const connect = mongoose.connect(url, { family: 4 });
-                connect.then(() => {
-                    Categories.findOne({ _id: id })
-                        .then((category) => {
-                            mongoose.disconnect().then(() => {
-                                if (category) {
-                                    resolve(true);
-                                }
-                                resolve(false);
-                            });
-                        })
-                        .catch((err) => {
-                            console.log('loi ne: ', err);
-                            resolve(false);
-                        });
-                })
-            } else {
-                resolve(false);
+let checkCateIsUsed = async (id) => {
+    try {
+        if (id !== '' && id !== undefined) {
+            const url = process.env.URL_DB;
+            await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+            const data = await Orchids.findOne({ category: id })
+            if (data) {
+                return true;
             }
-        } catch (error) {
-            resolve(error)
+            return false;
+        } else {
+            resolve(false);
         }
-    })
+    } catch (error) {
+        console.log(error);
+        return false
+    } finally {
+        // Close the database connection
+        mongoose.connection.close();
+    }
+}
+
+let checkCategoryById = async (id) => {
+    try {
+        if (id !== '' && id !== undefined) {
+            const url = process.env.URL_DB;
+            await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+            const data = await Categories.findOne({ _id: id })
+            if (data) {
+                return true;
+            }
+            return false;
+        } else {
+            resolve(false);
+        }
+    } catch (error) {
+        console.log(error);
+        return false
+    } finally {
+        // Close the database connection
+        mongoose.connection.close();
+    }
 }
 
 module.exports = new categoryServices();

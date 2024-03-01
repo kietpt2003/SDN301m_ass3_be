@@ -1,160 +1,117 @@
-.create-form {
-    width: 20%;
-    border-radius: 0.5rem;
-    color: #D9AAB7;
-    background-color: rgba(249, 176, 241, 0.1);
-    margin: 1rem auto;
-    padding: 1rem;
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.topnav {
+    overflow: hidden;
+    background-color: #333;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000; /* Ensure the navbar is above other elements */
+}
+
+.topnav a {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.topnav a.active {
+    background-color: #3498db;
+    color: white;
+}
+
+.field {
+    margin-bottom: 15px;
+}
+.create-category {
+        margin-top: 100px;
+        align-items: center;
+    display: flex;
+    // flex-direction: column;
+    justify-content: center;
     form {
-        .input-group {
-            display: flex;
-            color: black;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            padding: 0.5rem 0;
-        }
-
-        .error {
-            color: red;
-            margin: 0;
-            text-align: end;
-        }
-        .success {
-            color: green;
-            margin: 0;
-            text-align: center;
-        }
-        
-        button {
-            margin: 0.5rem;
-            width: 100%;
-            border: 0.1rem solid rgba(249, 176, 241, 0.1);
-            border-radius: 1rem;
-            background-color: #D9AAB7;
-            cursor: pointer;
-        }
+        width: 33%;
     }
-    .custom-select {
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        padding: 0.5rem 0;
-        color: black;
-        select {
-            // margin: 0.5rem;
-            width: 100%;
-        }
+    .label {
+        color: #333;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    
+    .control {
+        margin-top: 8px;
+    }
+    
+    .input {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 5px;
     }
 }
 
-.container {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
-    gap: 0.5rem;
-    .category {
-        padding: 0.5rem;
-        border-radius: 1rem;
-        background-color: rgba(249, 176, 241, 0.1);
-        .category-top {
-            .cate-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding-right: 1rem;
-                .category-collection {
-                    color: #D9AAB7;
-                    font-weight: bold;
-                    text-transform: uppercase;
-                }
-            }
-            .category-name {
-                text-transform: uppercase;
-            }
-            .category-description {
-                align-items: center;
-                padding: 0.1rem 0 0.1rem 0;
-                border-radius: 1rem;
-            }
-        }
-    }
+.category-container {
+    max-width: 600px;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-
-@media only screen and (max-width: 600px) {
-    .container {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 0.5rem;
-        .category {
-            padding: 0.5rem;
-            border-radius: 1rem;
-            background-color: rgba(249, 176, 241, 0.1);
-            .category-top {
-                .category-collection {
-                    color: #D9AAB7;
-                    font-weight: bold;
-                    font-size: 0.3rem;
-                    text-transform: uppercase;
-                }
-                .category-name {
-                    font-size: 0.5rem;
-                    text-transform: uppercase;
-                }
-                .category-description {
-                    align-items: center;
-                    padding: 0.1rem 0 0.1rem 0;
-                    border-radius: 1rem;
-                    font-size: 0.5rem;
-                }
-            }
-        }
-    }
+.category-item {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
 }
 
-/* Popup container */
-.popup {
-    color:#D9AAB7;
-    position: relative;
-    display: inline-block;
+.form-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.form-container form {
+    width: 48%;
+}
+
+.form-container label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-container input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.form-container button {
+    padding: 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
 }
-  
-/* The actual popup (appears on top) */
-.popup .popuptext {
-    visibility: hidden;
-    width: 160px;
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 8px 0;
-    position: absolute;
-    z-index: 1;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -80px;
+
+.form-container .error-message {
+    color: #ff0000;
+    margin-top: 5px;
 }
-  
-/* Popup arrow */
-.popup .popuptext::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: #555 transparent transparent transparent;
-}
-  
-/* Toggle this class when clicking on the popup container (hide and show the popup) */
-.popup .show {
-    visibility: visible;
-    -webkit-animation: fadeIn 1s;
-    animation: fadeIn 1s
-}
-  
-  /* Add animation (fade in the popup) */
+/* Add animation (fade in the popup) */
 @-webkit-keyframes fadeIn {
     from {opacity: 0;}
     to {opacity: 1;}
@@ -205,4 +162,3 @@
     }
       
 }
-  

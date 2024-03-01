@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/css/product.scss" />
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <title>Document</title>
+    <title>User Account</title>
     <script>
         // When the user clicks on <div>, open the popup
         function myFunction(index) {
@@ -83,51 +83,51 @@
                 }
             }).then((data) => {
                 console.log('check res: ', data.data.category.categoryName);
-                const orchid = data.data;
+                const userAcc = data.data;
 
-                document.getElementById('orcName').value = orchid.name;
-                document.getElementById('imgURL').value = orchid.image;
-                document.getElementById('orcOrigin').value = orchid.origin;
-                document.getElementById('orcNatural').value = orchid.isNatural == true ? 'true' : 'false';
+                document.getElementById('orcName').value = userAcc.name;
+                document.getElementById('imgURL').value = userAcc.image;
+                document.getElementById('orcOrigin').value = userAcc.origin;
+                document.getElementById('orcNatural').value = userAcc.isNatural == true ? 'true' : 'false';
                 const selectTag = document.getElementById('orcCategory');
                 selectElement.querySelector
-                const optionElement = selectTag.selectElement.querySelector(`[value="${orchid.category.categoryName}"]`)
+                const optionElement = selectTag.selectElement.querySelector(`[value="${userAcc.category.categoryName}"]`)
                 if (optionElement) {
                     optionElement.setAttribute('selected', 'selected');
                 }
                 return data;
             })
-            // document.getElementById('currentName').value = orchid.name;
-            // document.getElementById('image').value = orchid.image;
-            // console.log('here: ', orchid.category);
+            // document.getElementById('currentName').value = userAcc.name;
+            // document.getElementById('image').value = userAcc.image;
+            // console.log('here: ', userAcc.category);
         }
 
         const handleUpdateForm = () => {
             document.getElementById("update-form").addEventListener("submit", function (event) {
                 // Prevent the form from submitting
                 event.preventDefault();
-                let orchid = {};
-                orchid.id = event.target.elements.id.value;
-                orchid.name = event.target.elements.orchidName.value;
-                orchid.currentName = event.target.elements.currentName.value;
-                orchid.image = event.target.elements.image.value;
-                orchid.price = event.target.elements.price.value;
-                orchid.origin = event.target.elements.origin.value;
-                orchid.isNatural = event.target.elements.isNatural.value;
-                orchid.color = event.target.elements.color.value;
+                let userAcc = {};
+                userAcc.id = event.target.elements.id.value;
+                userAcc.name = event.target.elements.orchidName.value;
+                userAcc.currentName = event.target.elements.currentName.value;
+                userAcc.image = event.target.elements.image.value;
+                userAcc.price = event.target.elements.price.value;
+                userAcc.origin = event.target.elements.origin.value;
+                userAcc.isNatural = event.target.elements.isNatural.value;
+                userAcc.color = event.target.elements.color.value;
                 fetch('/Orchids', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(orchid)
+                    body: JSON.stringify(userAcc)
                 })
                     .then(response => {
                         return response.json(); // Parse the JSON in the response
                     })
                     .then(data => {
                         // Access the data returned from the server
-                        console.log('arrOrchids:', data.arrOrchids);
+                        console.log('arrUsers:', data.arrUsers);
                         console.log('isUpdate:', data.isUpdate);
                         console.log('check err: ', data.errorUpdate);
                         if (!data.isUpdate) {
@@ -175,19 +175,19 @@
             document.getElementById("create-form").addEventListener("submit", function (event) {
                 // Prevent the form from submitting
                 event.preventDefault();
-                let orchid = {};
-                orchid.name = event.target.elements.orchidName.value;
-                orchid.image = event.target.elements.image.value;
-                orchid.price = event.target.elements.price.value;
-                orchid.origin = event.target.elements.origin.value;
-                orchid.isNatural = event.target.elements.isNatural.value;
-                orchid.color = event.target.elements.color.value;
+                let userAcc = {};
+                userAcc.name = event.target.elements.orchidName.value;
+                userAcc.image = event.target.elements.image.value;
+                userAcc.price = event.target.elements.price.value;
+                userAcc.origin = event.target.elements.origin.value;
+                userAcc.isNatural = event.target.elements.isNatural.value;
+                userAcc.color = event.target.elements.color.value;
                 fetch('/Orchids', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(orchid)
+                    body: JSON.stringify(userAcc)
                 })
                     .then(response => {
                         return response.json(); // Parse the JSON in the response
@@ -240,86 +240,50 @@
     <div class="topnav">
         <% if (typeof authenticatedUser !=='undefined' ) { %>
             <a href="/users/dashboard">Dashboard</a>
-            <a class="active" href="/Orchids?i=<%= authenticatedUser.id  %>">Orchids</a>
+            <a href="/Orchids?i=<%= authenticatedUser.id%>">Orchids</a>
             <% } else { %>
-                <a class="active" href="/Orchids">Orchids</a>
+                <a href="/Orchids">Orchids</a>
                 <% } %>
                     <% if (typeof authenticatedUser !=='undefined' ) { %>
-                        <a href="/categories?i=<%= authenticatedUser.id %>">Categories</a>
+                        <a href="/categories?i=<%= authenticatedUser.id%>">Categories</a>
                         <% } else { %>
                             <a href="/categories">Categories</a>
                             <% } %>
                                 <% if (typeof authenticatedUser !=='undefined' ) { %>
-                                    <a href="/accounts?i=<%= authenticatedUser.id %>">Accounts</a>
+                                    <a class="active" href="/accounts?i=<%= authenticatedUser.id%>">Accounts</a>
                                     <% } else { %>
-                                        <a href="/accounts">Accounts</a>
+                                        <a class="active" href="/accounts">Accounts</a>
                                         <% } %>
     </div>
 
-    <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
-        <!-- Search form -->
-        <div class="create-form">
-            <h2>Search Orchid</h2>
-            <form action="/Orchids/name/" method="get">
-                <input type="text" name="i" value="<%= authenticatedUser.id %>" hidden />
-                <div class="input-group">
-                    <input type="text" name="name" placeholder="Enter orchid name">
-                </div>
-                <div class="input-group">
-                    <input type="submit" value="Submit">
-                </div>
-            </form>
+    <!-- List accounts -->
+    <% if (typeof arrUsers !=='undefined' ) { %>
+        <div class="container">
+            <% arrUsers.forEach(function(userAcc, index) { %>
+                <form id="delete-form<%= index %>" class="product" action="/Orchids/<%= userAcc._id %>" method="get">
+                    <input type="hidden" name="i" value="<%= authenticatedUser.id%>">
+                    <input type="text" hidden value="orchidById" />
+                    <div class="product-right">
+                        <div class="product-top">
+                            <h1 class="product-name">
+                                <%= userAcc.username %>
+                            </h1>
+                        </div>
+                    </div>
+                </form>
+                <% }) %>
         </div>
-    </div>
+        <% } else { %>
+            <p>Nothing to show</p>
+            <% } %>
 
-    <% if (authenticatedUser.isAdmin) { %>
-        <div class="row-buttons">
-            <a href="/orchids/create?i=<%= authenticatedUser.id %>" class="button button-create">Create Orchid</a>
-        </div>
-        <% } %>
-
-            <!-- List orchids -->
-            <% if (typeof arrOrchids !=='undefined' ) { %>
-                <div class="container">
-                    <% arrOrchids.forEach(function(orchid, index) { %>
-                        <form id="delete-form<%= index %>" class="product" action="/Orchids/<%= orchid._id %>"
-                            method="get">
-                            <input type="hidden" name="i" value="<%= authenticatedUser.id%>">
-                            <input type="text" hidden value="orchidById" />
-                            <div class="product-left">
-                                <div class="images" style="background-image: url(<%= orchid.image %>);">
-                                </div>
-                            </div>
-                            <div class="product-right">
-                                <div class="product-top">
-                                    <p class="product-collection">Orchid Collection</p>
-                                    <h1 class="product-name">
-                                        <%= orchid.name %>
-                                    </h1>
-
-                                    <p>State: <%= orchid.origin %>
-                                    </p>
-                                    <p>Natural: <%= orchid.isNatural %>
-                                    </p>
-                                </div>
-                                <div class="product-bottom">
-                                    <button type="submit">Detail</button>
-                                </div>
-                            </div>
-                        </form>
-                        <% }) %>
-                </div>
-                <% } else { %>
-                    <p>Nothing to show</p>
+                <!-- Success -->
+                <% if (typeof isSuccess !=='undefined' ) { %>
+                    <div class="alert">
+                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        Success!!
+                    </div>
                     <% } %>
-
-                        <!-- Success -->
-                        <% if (typeof isSuccess !=='undefined' ) { %>
-                            <div class="alert">
-                                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-                                Success!!
-                            </div>
-                            <% } %>
 </body>
 
 </html>

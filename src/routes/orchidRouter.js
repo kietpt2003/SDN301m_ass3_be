@@ -1,11 +1,10 @@
 const passport = require("passport");
-const { ensureAuthenticated, ensureAdmin } = require("../config/auth");
 const orchidsController = require('../controller/orchidsController');
 
 const iniOrchidRoute = (app) => {
     const router = require("express").Router();
     //search filter
-    router.get('/name', passport.authenticate('isAdmin-strategy', { failureRedirect: '/users/dashboard', failureFlash: true }), (req, res) => {
+    router.get('/name', passport.authenticate('isUser-strategy', { failureRedirect: '/users/dashboard', failureFlash: true }), (req, res) => {
         const authenticatedUser = req.user; // Access the authenticated user from req.user
         orchidsController.orchidByName(req, res, authenticatedUser);
     });
@@ -36,13 +35,23 @@ const iniOrchidRoute = (app) => {
         orchidsController.deleteOrchid(req, res, authenticatedUser);
     });
 
+    //comments
+    router.get('/:id/comment', passport.authenticate('isUser-strategy', { failureRedirect: '/users/dashboard', failureFlash: true }), (req, res) => {
+        const authenticatedUser = req.user; // Access the authenticated user from req.user
+        orchidsController.getCommentPage(req, res, authenticatedUser);
+    });
+    router.post('/:id/comment', passport.authenticate('isUser-strategy', { failureRedirect: '/users/dashboard', failureFlash: true }), (req, res) => {
+        const authenticatedUser = req.user; // Access the authenticated user from req.user
+        orchidsController.postComment(req, res, authenticatedUser);
+    });
+
     //get by id
-    router.get('/:id', passport.authenticate('isAdmin-strategy', { failureRedirect: '/users/dashboard', failureFlash: true }), (req, res) => {
+    router.get('/:id', passport.authenticate('isUser-strategy', { failureRedirect: '/users/dashboard', failureFlash: true }), (req, res) => {
         const authenticatedUser = req.user; // Access the authenticated user from req.user
         orchidsController.orchidById(req, res, authenticatedUser);
     });
     //get all
-    router.get('/', passport.authenticate('isAdmin-strategy', { failureRedirect: '/users/dashboard', failureFlash: true }), (req, res) => {
+    router.get('/', passport.authenticate('isUser-strategy', { failureRedirect: '/users/dashboard', failureFlash: true }), (req, res) => {
         const authenticatedUser = req.user; // Access the authenticated user from req.user
         orchidsController.OrchidsPage(req, res, authenticatedUser);
     });
@@ -51,11 +60,4 @@ const iniOrchidRoute = (app) => {
     return app.use('/Orchids', router);
 }
 
-const orchidApiRoute = (app) => {
-    const router = require("express").Router();
-    router.get('/:id', orchidsController.APIorchidById);
-
-    return app.use('/api/orchids', router);
-}
-
-module.exports = { iniOrchidRoute, orchidApiRoute }
+module.exports = { iniOrchidRoute }

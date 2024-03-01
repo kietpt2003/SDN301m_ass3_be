@@ -3,17 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/styles.scss" />
+    <link rel="stylesheet" href="/css/register.scss" />
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <title>Create User</title>
 </head>
 
 <body>
-    <div class="topnav">
-        <a class="active" href="/">Orchids</a>
-        <a href="/categories">Categories</a>
-    </div>
     <div class="form-add-new">
         <form action="/users" method="post">
             <fieldset>
@@ -53,6 +49,10 @@
                                 </div>
             </fieldset>
         </form>
+        <!-- "Sign In" button to go back to the sign-in page -->
+        <div class="back-to-signin">
+            <a href="/users/login" class="button is-primary">Sign In</a>
+        </div>
     </div>
 
 </body>

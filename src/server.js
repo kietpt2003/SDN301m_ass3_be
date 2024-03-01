@@ -16,9 +16,10 @@ const passport = require('passport')
 const session = require('express-session');
 const flash = require('connect-flash');
 const usersRouter = require("./routes/usersRouter");
-const { iniOrchidRoute, orchidApiRoute } = require("./routes/orchidRouter");
+const { iniOrchidRoute } = require("./routes/orchidRouter");
 const initCategoryRouter = require('./routes/categoryRouter');
 const configPassport = require('./config/passport');
+const { iniAccountRoute } = require('./routes/accountRouter');
 
 const app = express();
 
@@ -37,6 +38,8 @@ configENV(dotenv);
 configPassport.passportLocal();
 
 configPassport.passportIsAdmin();
+
+configPassport.passportIsUser();
 
 app.use(
     session({
@@ -68,11 +71,12 @@ app.get('/', function (req, res) {
 //Init category routes
 initCategoryRouter(app);
 
+//Init account routes
+iniAccountRoute(app);
+
 //Init orchid routes
 iniOrchidRoute(app);
 
-//orchid api routes
-orchidApiRoute(app);
 
 app.use("/users", usersRouter);
 

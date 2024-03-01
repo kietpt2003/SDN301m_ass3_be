@@ -13,22 +13,28 @@
 <body>
     <div class="topnav">
         <% if (typeof authenticatedUser !=='undefined' ) { %>
-            <a class="active" href="/Orchids?i=<%= authenticatedUser.id %>">Orchids</a>
+            <a href="/users/dashboard">Dashboard</a>
+            <a class="active" href="/Orchids?i=<%= authenticatedUser.id%>">Orchids</a>
             <% } else { %>
                 <a class="active" href="/Orchids">Orchids</a>
                 <% } %>
                     <% if (typeof authenticatedUser !=='undefined' ) { %>
-                        <a href="/categories?i=<%= authenticatedUser.id %>">Categories</a>
+                        <a href="/categories?i=<%= authenticatedUser.id%>">Categories</a>
                         <% } else { %>
                             <a href="/categories">Categories</a>
                             <% } %>
+                                <% if (typeof authenticatedUser !=='undefined' ) { %>
+                                    <a href="/accounts?i=<%= authenticatedUser.id%>">Accounts</a>
+                                    <% } else { %>
+                                        <a href="/accounts">Accounts</a>
+                                        <% } %>
     </div>
 
     <!-- Update form -->
     <div class="create-form">
         <h2>Update Orchid Form</h2>
         <form id="create-form" action="/Orchids/update?_method=PUT" method="post">
-            <input type="text" name="i" value="<%= authenticatedUser.id %>" hidden />
+            <input type="text" name="i" value="<%= authenticatedUser.id%>" hidden />
             <input type="hidden" name="id" value="<%= orchid._id %>">
             <div class="input-group">
                 <label for="orchidName">Orchid name:</label>

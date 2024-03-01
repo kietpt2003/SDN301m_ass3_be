@@ -1,0 +1,87 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 300px;
+}
+
+.field {
+    margin-bottom: 15px;
+}
+
+.label {
+    color: #333;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.control {
+    margin-top: 8px;
+}
+
+.input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.is-grouped {
+    display: flex;
+    justify-content: center;
+}
+
+.button {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition-duration: 0.4s;
+}
+
+.button:hover {
+    background-color: #555;
+}
+
+.success-msg {
+    color: green;
+}
+
+.field.is-grouped {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.button.is-primary {
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.button.is-primary:hover {
+    background-color: #45a049;
+}
+
+
+.error-msg {
+    color: red;
+}

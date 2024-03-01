@@ -3,6 +3,7 @@ const Orchids = require('../models/Orchids');
 const passport = require('passport');
 const Categories = require('../models/Categories');
 const CategoryService = require('./CategoryService');
+const { Comments } = require('../models/Comments');
 
 class orchidServices {
     async getAllOrchids() {
@@ -181,25 +182,90 @@ class orchidServices {
         }
     }
 
+    async createComment(newComment, user) {
+        try {
+            let error = {}
+            let isError = false
+            let data = {}
+
+            if (user.isAdmin) {
+                error.isAdmin = 'Admin cannot post a comment';
+                isError = true;
+            }
+
+            if (isNaN(newComment.rating)) {
+                error.isNotNumber = 'Rating must be a number';
+                isError = true;
+            }
+
+            if (isError) {
+                return {
+                    data: { currentComment: newComment },
+                    error: error,
+                }
+            }
+            let canComment = await canUserComment(user._id, newComment.orchidId);
+            if (!canComment) {
+                error.isDup = 'You can comment one time in an orchid';
+                isError = true;
+                return {
+                    data: { currentComment: newComment },
+                    error: error,
+                }
+            }
+
+            if (!isError) {
+                try {
+
+                    const newDataComment = {
+                        comment: newComment.comment,
+                        rating: newComment.rating,
+                        author: newComment.userId,
+                    };
+
+
+                    const url = process.env.URL_DB;
+                    await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+
+                    await new Comments(newDataComment).save();
+
+                    const orchid = await Orchids.findById(newComment.orchidId);
+
+                    orchid.comments.push(newDataComment);
+                    data = await orchid.save();
+
+                    console.log('check data: ', data);
+                    if (data) {
+                        return {
+                            isSuccess: true
+                        };
+                    } else {
+                        error.createfailed = 'Something wrong';
+                        return {
+                            data: { currentComment: newComment },
+                            error: error,
+                        };
+                    }
+                } catch (error) {
+                    console.log(error);
+                    return {
+                        data: { currentComment: newComment },
+                    }
+                } finally {
+                    // Close the database connection
+                    mongoose.connection.close();
+                }
+            }
+        } catch (error) {
+            console.log(error);
+            return { error: error };
+        }
+    }
+
     async createOrchid(newOrchid) {
         try {
             let error = {}
             let isError = false
-
-            let arrCategories = [];
-
-            try {
-                const url = process.env.URL_DB;
-                await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
-                arrCategories = await Categories.find({})
-            } catch (error) {
-                arrOrchids = [];
-                arrCategories = [];
-            } finally {
-                // Close the database connection
-                mongoose.connection.close();
-            }
-            console.log('check cate:', newOrchid.cateId);
 
             if (newOrchid.orchidName === '' || newOrchid.orchidName === undefined) {
                 error.isEmptyName = 'Name cannot be empty';
@@ -228,7 +294,7 @@ class orchidServices {
             }
             if (isError) {
                 return {
-                    data: { arrCategories, currentOrchid: newOrchid },
+                    data: { currentOrchid: newOrchid },
                     error: error,
                 }
             }
@@ -237,7 +303,7 @@ class orchidServices {
                 error.isDup = 'Name Duplicated';
                 isError = true;
                 return {
-                    data: { arrCategories, currentOrchid: newOrchid },
+                    data: { currentOrchid: newOrchid },
                     error: error,
                 }
             }
@@ -256,7 +322,7 @@ class orchidServices {
                 } catch (error) {
                     console.log(error);
                     return {
-                        data: { arrCategories, currentOrchid: newOrchid },
+                        data: { currentOrchid: newOrchid },
                     }
                 } finally {
                     // Close the database connection
@@ -264,33 +330,19 @@ class orchidServices {
                 }
                 console.log('check orc ', orc);
                 if (orc) {
-                    arrCategories = []
-                    try {
-                        const url = process.env.URL_DB;
-                        await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
-                        arrCategories = await Categories.find({})
-                        return {
-                            data: { arrCategories },
-                            isSuccess: true
-                        };
-                    } catch (error) {
-                        console.log(error);
-                        return {
-                            data: { arrCategories, currentOrchid: newOrchid },
-                        };
-                    } finally {
-                        // Close the database connection
-                        mongoose.connection.close();
-                    }
+                    return {
+                        isSuccess: true
+                    };
                 } else {
                     error.createfailed = 'Something wrong';
                     return {
-                        data: { arrCategories },
+                        data: { currentOrchid: newOrchid },
                         error: error,
                     };
                 }
             }
         } catch (error) {
+            console.log(error);
             return { error: error };
         }
     }
@@ -333,7 +385,6 @@ class orchidServices {
             }
 
             if (newOrchid.name !== newOrchid.currentName) {
-                console.log('vo day: ', newOrchid.name, 'cur:', newOrchid.currentName);
                 let isExist = await checkOrchidName(newOrchid.name);
                 if (isExist) {
                     error.isDup = 'Name Duplicated';
@@ -346,7 +397,6 @@ class orchidServices {
             }
 
             if (!isError) {
-                console.log('check cateId: ', newOrchid.cateId);
                 const cate = await CategoryService.getCategoryById(newOrchid.cateId);
                 let data = {};
                 try {
@@ -385,12 +435,12 @@ class orchidServices {
 
     async deleteOrchidById(id) {
         const error = {}
-        // let arrOrchids = await getAllOrchids();
+
         const isExist = await checkOrchidById(id);
         if (isExist) {
             try {
                 const url = process.env.URL_DB;
-                await mongoose.connect(url, { family: 4 });
+                await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
                 const data = await Orchids.deleteOne({ "_id": id })
                 if (data) {
                     return {
@@ -423,32 +473,22 @@ function isNumber(str) {
     return !isNaN(parseFloat(str)) && isFinite(str.trim());
 }
 
-let checkOrchidName = (name) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const url = process.env.URL_DB;
-            const connect = mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
-            connect.then(() => {
-                Orchids.findOne({ name: name })
-                    .then(async (orchid) => {
-                        if (orchid) {
-                            await mongoose.disconnect();
-                            resolve(true);
-                        } else {
-                            await mongoose.disconnect();
-                            resolve(false);
-                        }
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                        resolve(false);
-                    });
-            })
-        } catch (error) {
-            console.log('Catch error: ', error);
-            resolve(false);
+let checkOrchidName = async (name) => {
+    try {
+        const url = process.env.URL_DB;
+        await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+        const data = await Orchids.findOne({ name: name })
+        if (data) {
+            return true;
         }
-    })
+        return false;
+    } catch (error) {
+        console.log('Catch error: ', error);
+        return false;
+    } finally {
+        // Close the database connection
+        mongoose.connection.close();
+    }
 }
 
 let checkOrchidById = async (id) => {
@@ -530,5 +570,33 @@ async function isIdValid(id, model) {
         mongoose.connection.close();
     }
 }
+
+const canUserComment = async (userId, orchidId) => {
+    try {
+        const url = process.env.URL_DB;
+        await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+        // Check if the comment exists for the given user in the Orchid schema
+        const orchid = await Orchids.findById(orchidId)
+            .populate({
+                path: "comments",
+                populate: {
+                    path: "author",
+                },
+            });
+        console.log('check orc ', orchid);
+
+        const canComment = orchid.comments.every(
+            (comment) => comment.author._id.toString() !== userId.toString()
+        );
+        // If existingComment is not null, it means the comment already exists
+        return canComment;
+    } catch (error) {
+        console.error('Error checking orchid comment:', error);
+        throw error; // You can handle the error based on your application's needs
+    } finally {
+        // Close the database connection
+        mongoose.connection.close();
+    }
+};
 
 module.exports = new orchidServices();

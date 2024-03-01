@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/styles.scss" />
-    <link rel="stylesheet" href="/css/productDetail.scss" />
+    <link rel="stylesheet" href="/css/orchidDetail.scss" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <title>Orchid Detail</title>
 </head>
@@ -12,15 +11,21 @@
 <body>
     <div class="topnav">
         <% if (typeof authenticatedUser !=='undefined' ) { %>
-            <a class="active" href="/Orchids?i=<%= authenticatedUser.id %>">Orchids</a>
+            <a href="/users/dashboard">Dashboard</a>
+            <a class="active" href="/Orchids?i=<%= authenticatedUser.id%>">Orchids</a>
             <% } else { %>
                 <a class="active" href="/Orchids">Orchids</a>
                 <% } %>
                     <% if (typeof authenticatedUser !=='undefined' ) { %>
-                        <a href="/categories?i=<%= authenticatedUser.id %>">Categories</a>
+                        <a href="/categories?i=<%= authenticatedUser.id%>">Categories</a>
                         <% } else { %>
                             <a href="/categories">Categories</a>
                             <% } %>
+                                <% if (typeof authenticatedUser !=='undefined' ) { %>
+                                    <a href="/accounts?i=<%= authenticatedUser.id%>">Accounts</a>
+                                    <% } else { %>
+                                        <a href="/accounts">Accounts</a>
+                                        <% } %>
     </div>
     <% if (typeof orchid !=='undefined' ) { %>
         <div class="product">
@@ -44,12 +49,12 @@
                         </h4>
                         <% if (authenticatedUser.isAdmin) { %>
                             <div class="row-buttons">
-                                <a href="/orchids/update/<%= orchid._id %>?i=<%= authenticatedUser.id %>"
+                                <a href="/orchids/update/<%= orchid._id %>?i=<%= authenticatedUser.id%>"
                                     class="button button-update">Update
                                     Page</a>
                                 <form action="/Orchids/delete?_method=DELETE" method="post">
                                     <input hidden name="id" value="<%= orchid._id %>" />
-                                    <input hidden name="i" value="<%= authenticatedUser.id %>" />
+                                    <input hidden name="i" value="<%= authenticatedUser.id%>" />
                                     <button type="submit" class="button button-delete">Delete</button>
                                 </form>
                             </div>
@@ -59,35 +64,45 @@
             </div>
         </div>
 
+        <% if (typeof orchid !=='undefined' ) { %>
+            <a href="/Orchids/<%= orchid._id %>/comment?i=<%= authenticatedUser.id%>">Create Comment</a>
+            <% } %>
 
-        <div class="comment">
-            <div class="comment-child">
-                <h2>Discussion</h2>
-                <% orchid.comments.forEach(function(comment, index) { %>
-                    <div class="comment-bg">
-                        <div class="comment-bg-child">
-                            <div class="comment-second-child">
-                                <h2>
-                                    <%= comment.author.username %>
-                                </h2>
-                                <div class="rating-comment">
-                                    <h3>
-                                        <%= comment.rating %>
-                                    </h3>
-                                    <i class="material-icons">star</i>
+                <div class="comment">
+                    <div class="comment-child">
+                        <h2>Discussion</h2>
+                        <% orchid.comments.forEach(function(comment, index) { %>
+                            <div class="comment-bg">
+                                <div class="comment-bg-child">
+                                    <div class="comment-second-child">
+                                        <h2>
+                                            <%= comment.author.username %>
+                                        </h2>
+                                        <div class="rating-comment">
+                                            <h3>
+                                                <%= comment.rating %>
+                                            </h3>
+                                            <i class="material-icons">star</i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p>
+                                            <%= comment.comment %>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                            <div>
-                                <p>
-                                    <%= comment.comment %>
-                                </p>
-                            </div>
-                        </div>
+                            <% }) %>
                     </div>
-                    <% }) %>
-            </div>
-        </div>
-        <% } %>
+                </div>
+                <% } %>
+                    <!-- Success -->
+                    <% if (typeof isSuccess !=='undefined' ) { %>
+                        <div class="alert">
+                            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                            Success!!
+                        </div>
+                        <% } %>
 </body>
 
 </html>

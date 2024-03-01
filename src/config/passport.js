@@ -86,9 +86,48 @@ const passportIsAdmin = () => {
     )
 }
 
+const passportIsUser = () => {
+    passport.use(
+        'isUser-strategy', new CustomStrategy(
+            async function (req, callback) {
+                const url = process.env.URL_DB;
+                await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+                try {
+                    let { i } = req.query; //i for userId
+                    if (!i) {
+                        i = req.body.i;
+                    }
+                    if (!i) {
+                        i = req.params.i;
+                    }
+                    console.log('check user id: ', i);
+
+                    // Find user by id and where isAdmin is true
+                    const user = await Users.findById(i);
+
+
+                    if (!user) {
+                        console.log('User not found.');
+                        return callback(null, false, { message: 'User not found.' });
+                    }
+                    console.log('Found user:', user);
+                    callback(null, user);
+                } catch (error) {
+                    console.log(error);
+                    callback(null, false, { message: `Server err: ${error}` });
+                } finally {
+                    // Close the database connection
+                    mongoose.connection.close();
+                }
+            }
+        )
+    )
+}
+
 module.exports = {
     passportLocal,
-    passportIsAdmin
+    passportIsAdmin,
+    passportIsUser
 }
 
 // module.exports = function (passport) {

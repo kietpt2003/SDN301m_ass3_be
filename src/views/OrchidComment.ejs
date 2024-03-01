@@ -1,0 +1,85 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.scss" />
+    <link rel="stylesheet" href="/css/productDetail.scss" />
+    <title>Comments</title>
+</head>
+
+<body>
+    <div class="topnav">
+        <% if (typeof authenticatedUser !=='undefined' ) { %>
+            <a href="/users/dashboard">Dashboard</a>
+            <a class="active" href="/Orchids?i=<%= authenticatedUser.id%>">Orchids</a>
+            <% } else { %>
+                <a href="/users/dashboard">Dashboard</a>
+                <a class="active" href="/Orchids">Orchids</a>
+                <% } %>
+                    <% if (typeof authenticatedUser !=='undefined' ) { %>
+                        <a href="/categories?i=<%= authenticatedUser.id%>">Categories</a>
+                        <% } else { %>
+                            <a href="/categories">Categories</a>
+                            <% } %>
+                                <% if (typeof authenticatedUser !=='undefined' ) { %>
+                                    <a href="/accounts?i=<%= authenticatedUser.id%>">Accounts</a>
+                                    <% } else { %>
+                                        <a href="/accounts">Accounts</a>
+                                        <% } %>
+    </div>
+    <!-- Create form -->
+    <div class="create-form">
+        <h2>Create Comment Form</h2>
+        <form id="create-form" action="/Orchids/<%= orchid._id %>/comment?i=<%= authenticatedUser.id%>" method="post">
+            <input hidden name="orchidId" value="<%= orchid._id %>" />
+            <input hidden name="userId" value="<%= authenticatedUser.id%>" />
+            <div class="input-group">
+                <label for="rating">Rating:</label>
+                <% if(typeof currentComment !=='undefined' ) { %>
+                    <input type="text" name="rating" value="<%= currentComment.rating %>" required />
+                    <% } else { %>
+                        <input type="text" name="rating" required />
+                        <% } %>
+                            <% if (typeof error !=='undefined' ) { %>
+                                <% if (typeof error.isNotNumber !=='undefined' ) { %>
+                                    <p class="error">
+                                        <%= error.isNotNumber %>
+                                    </p>
+                                    <% } %>
+                                        <% } %>
+            </div>
+            <div class="input-group">
+                <label for="comment">Your comment:</label>
+                <% if(typeof currentComment !=='undefined' ) { %>
+                    <input type="text" name="comment" value="<%= currentComment.comment %>" required />
+                    <% } else { %>
+                        <input type="text" name="comment" required />
+                        <% } %>
+            </div>
+            <div class="input-group">
+                <button type="submit">Comment</button>
+            </div>
+            <!-- Duplicate -->
+            <% if (typeof error !=='undefined' ) { %>
+                <% if (typeof error.isDup !=='undefined' ) { %>
+                    <p class="error">
+                        <%= error.isDup %>
+                    </p>
+                    <% } %>
+                        <% if (typeof error.createfailed !=='undefined' ) { %>
+                            <p class="error">
+                                <%= error.createfailed %>
+                            </p>
+                            <% } %>
+                                <% if (typeof error.isAdmin !=='undefined' ) { %>
+                                    <p class="error">
+                                        <%= error.isAdmin %>
+                                    </p>
+                                    <% } %>
+                                        <% } %>
+        </form>
+    </div>
+</body>
+
+</html>

@@ -67,7 +67,7 @@ class UserController {
   }
 
   async update(req, res, next) {
-    console.log('check: ', req.body.currentUserName);
+    console.log('check: ', req.body);
     const { id, currentUserName, username, newPassword, confirmPassword } = req.body;
     const errors = {};
     let isError = false;
@@ -75,49 +75,50 @@ class UserController {
     if (id === '' || id === undefined) {
       errors.idRequired = "Required Id";
       isError = true
-    } else {
-      isExist = await checkUserId(id);
     }
-    if (isExist) {
-      // Validate username
-      if (!username || username.trim() === '') {
-        errors.usNameErr = 'Username is required.';
+    // Validate username
+    const isDup = await checkNameDup(username, currentUserName);
+
+    if (isDup) {
+      errors.usNameErr = 'Duplicated username';
+      isError = true
+    }
+    if (!username || username.trim() === '') {
+      errors.usNameErr = 'Username is required.';
+      isError = true
+    }
+
+    // Validate password
+    if (newPassword && newPassword.trim() !== '') {
+      // Password is provided, check if it meets criteria
+      if (newPassword.length < 6) {
+        errors.passLengthErr = 'Password must be at least 6 characters.';
         isError = true
       }
 
-      // Validate password
-      if (newPassword && newPassword.trim() !== '') {
-        // Password is provided, check if it meets criteria
-        if (newPassword.length < 6) {
-          errors.passLengthErr = 'Password must be at least 6 characters.';
-          isError = true
-        }
-
-        // Check if password matches confirm password
-        if (newPassword !== confirmPassword) {
-          errors.passErr = 'Passwords do not match.';
-          isError = true
-        }
+      // Check if password matches confirm password
+      if (newPassword !== confirmPassword) {
+        errors.passErr = 'Passwords do not match.';
+        isError = true
       }
-      if (!newPassword && !confirmPassword) {
-        //Bấm update mà ko làm gì
-        return res.render('dashboard', { data: { _id: id, username: currentUserName } })
-      }
-    } else {
-      errors.idExist = "Id doesn't exist."
-      isError = true
+    }
+    if (!newPassword && !confirmPassword) {
+      //Bấm update mà ko làm gì
+      return res.render('dashboard', { data: { _id: id, username: currentUserName } })
     }
     if (isError) {
       return res.render('dashboard', { data: { _id: id, username: currentUserName }, errors: errors })
     } else {
       try {
         const url = process.env.URL_DB;
-        await mongoose.connect(url, { family: 4, dbName: 'interiorConstruction' });
+        await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
         //Hash password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-        Users.updateOne({ _id: id }, { $set: { name: username, password: hashedPassword } });
+
+        await Users.updateOne({ _id: id }, { $set: { username: username, password: hashedPassword } });
+
         const user = await Users.findById(id)
-        res.render('dashboard', { data: user })
+        res.render('dashboard', { data: user, isSuccess: true })
       } catch (error) {
         console.log('check err: ', error);
       } finally {
@@ -165,7 +166,7 @@ let checkUserId = (id) => {
     try {
       if (id !== '' && id !== undefined) {
         const url = process.env.URL_DB;
-        const connect = mongoose.connect(url, { family: 4 });
+        const connect = mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
         connect.then(() => {
           Users.findById(id)
             .then((user) => {
@@ -188,6 +189,28 @@ let checkUserId = (id) => {
       resolve(error)
     }
   })
+}
+
+let checkNameDup = async (newName, currentUserName) => {
+  try {
+    if (newName !== '' && newName !== undefined && currentUserName !== '' && currentUserName !== undefined) {
+      const url = process.env.URL_DB;
+      await mongoose.connect(url, { family: 4, dbName: 'shoppingFlowerAss3' });
+      const data = await Users.find({ username: newName });
+      console.log('check dât: ', data);
+      if (data) {
+        return true;
+      }
+      return false;
+    }
+    return false;
+  } catch (error) {
+    console.log(error);
+    return false;
+  } finally {
+    // Close the database connection
+    mongoose.connection.close();
+  }
 }
 
 module.exports = new UserController();
